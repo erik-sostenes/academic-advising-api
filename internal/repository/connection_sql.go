@@ -26,7 +26,7 @@ func LoadSqlConnection() (*sql.DB, error) {
 			os.Getenv("DB_PASSWORD"),
 			os.Getenv("DB_HOST"),
 			"3306",
-			"advices",
+			"advisories",
 		)
 		sqlConnection, err = sql.Open(driverName, url)
 		if err != nil {
@@ -44,5 +44,3 @@ func NewDB() *sql.DB {
 	}
 	return db
 }
-
-
