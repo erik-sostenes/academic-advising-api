@@ -3,31 +3,31 @@ package model
 import "time"
 
 type(
-	academicAdvisoryIds struct {
+	AcademicAdvisoryIds struct {
 		SubjectId uint32 `json:"subject_id"`
 		StudentTuition uint32 `json:"student_tuition"`
 		TeacherTuition uint32 `json:"teacher_tuition"`
 		UniversityCourseId uint32 `json:"university_course_id"`
-		SubCoordinatorsTuition uint32 `json:"sub_coordinators_tuition"`
-		CoordinatorsTuition uint32 `json:"coordinators_tuition"`
+		SubCoordinatorTuition uint32 `json:"sub_coordinators_tuition"`
+		CoordinatorTuition uint32 `json:"coordinators_tuition"`
 	}
 
-	academicAdvisory struct {
-		AdviceId string `json:"advice_id"`
+	AcademicAdvisory struct {
+		AdvisoryId string `json:"advice_id"`
 		Description string `json:"description"`
 		Reports []byte `json:"reports"`
 		FromDate time.Time `json:"from_date"`
 		ToDate time.Time `json:"to_date"`
 		IsActive bool `json:"is_active"`
-		AcademicAdvisoryIds academicAdvisoryIds
+		AcademicAdvisoryIds AcademicAdvisoryIds
 	}
 	
-	AcademicAdvisory []AcademicAdvisory
+	AcademicAdvisorys []AcademicAdvisory
 )
 
 func NewAcademicAdvisoryIds(subjectId, studentTuition, teacherTuition, universityCourseId,
-														subCoordinatorsTuition, coordinatorsTuition uint32) *academicAdvisoryIds {
-	return &academicAdvisoryIds{
+														subCoordinatorsTuition, coordinatorsTuition uint32) *AcademicAdvisoryIds {
+	return &AcademicAdvisoryIds{
 		SubjectId: subjectId,
 		StudentTuition: studentTuition,
 		TeacherTuition: teacherTuition,
@@ -36,11 +36,11 @@ func NewAcademicAdvisoryIds(subjectId, studentTuition, teacherTuition, universit
 		CoordinatorsTuition: coordinatorsTuition,
 	}
 }
-func NewAcademicAdvisory(adviceId, description string,reports []byte, fromDate, 
-												toDate time.Time, isActive bool, academicAdvisoryIds academicAdvisoryIds) *academicAdvisory {
+func NewAcademicAdvisory(advisoryId, description string,reports []byte, fromDate, 
+												toDate time.Time, isActive bool, academicAdvisoryIds AcademicAdvisoryIds) *AcademicAdvisory {
 
-	return &academicAdvisory{
-		AdviceId: adviceId,
+	return &AcademicAdvisory{
+		AdvisoryId: advisoryId,
 		Description: description,
 		Reports: reports,
 		FromDate: fromDate,
