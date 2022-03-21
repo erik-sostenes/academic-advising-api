@@ -33,6 +33,7 @@ func (a *advisoryAggregator) AddAdvisory(advisory *model.AcademicAdvisory) (err 
 		&advisory.Reports,
 		&advisory.FromDate,
 		&advisory.ToDate,
+		&advisory.RecordTime,
 		&advisory.IsActive,
 		&advisory.AcademicAdvisoryIds.SubjectId,
 		&advisory.AcademicAdvisoryIds.StudentTuition,

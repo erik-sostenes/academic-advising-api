@@ -8,7 +8,8 @@ const (
 												description,
 												reports,
 												from_date,
-											    to_date,
+											  to_date,
+												record_time,
 												is_active,
 												subject_id,
 												student_tuition,
@@ -16,7 +17,7 @@ const (
 												university_course_id,
 												subcoordinator_tuition,
 												coordinator_tuition
-												) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
+												) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
 )
 
 const (

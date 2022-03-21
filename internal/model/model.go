@@ -18,6 +18,7 @@ type (
 		Reports             []byte    `json:"reports"`
 		FromDate            time.Time `json:"from_date"`
 		ToDate              time.Time `json:"to_date"`
+		RecordTime          time.Time `json:"record_time"`
 		IsActive            bool      `json:"is_active"`
 		AcademicAdvisoryIds AcademicAdvisoryIds
 	}
@@ -37,7 +38,7 @@ func NewAcademicAdvisoryIds(subjectId, studentTuition, teacherTuition, universit
 	}
 }
 func NewAcademicAdvisory(advisoryId, description string, reports []byte, fromDate,
-	toDate time.Time, isActive bool, academicAdvisoryIds AcademicAdvisoryIds) *AcademicAdvisory {
+	toDate, recordTime time.Time, isActive bool, academicAdvisoryIds AcademicAdvisoryIds) *AcademicAdvisory {
 
 	return &AcademicAdvisory{
 		AdvisoryId:          advisoryId,
@@ -45,6 +46,7 @@ func NewAcademicAdvisory(advisoryId, description string, reports []byte, fromDat
 		Reports:             reports,
 		FromDate:            fromDate,
 		ToDate:              toDate,
+		RecordTime:          recordTime,
 		IsActive:            isActive,
 		AcademicAdvisoryIds: academicAdvisoryIds,
 	}
