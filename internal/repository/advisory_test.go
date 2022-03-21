@@ -14,6 +14,7 @@ var testAcademicAdvisory = &model.AcademicAdvisory{
 	Reports: []byte("This is test."),
 	FromDate: time.Now(),
 	ToDate: time.Now().AddDate(0, 2, 7),
+	RecordTime: time.Now(),
 	IsActive: true,
 	AcademicAdvisoryIds: model.AcademicAdvisoryIds{
 		SubjectId: 1,
