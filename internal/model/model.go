@@ -22,7 +22,7 @@ type (
 		AcademicAdvisoryIds AcademicAdvisoryIds
 	}
 
-	AcademicAdvisorys []AcademicAdvisory
+	AcademicAdvisories []AcademicAdvisory
 )
 
 func NewAcademicAdvisoryIds(subjectId, studentTuition, teacherTuition, universityCourseId,

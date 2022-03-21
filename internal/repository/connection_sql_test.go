@@ -7,6 +7,5 @@ func TestNewDB(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed connection to MySQL")
 	}
-
-	db.Close()
+	defer db.Close()
 }

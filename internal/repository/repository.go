@@ -1,5 +1,7 @@
 package repository
 
+import "github.com/itsoeh/academic-advising-api/internal/model"
+
 const (
 	sqlQueryAddAdvisory = `INSERT INTO advisories(
 												advisory_id,
@@ -16,3 +18,8 @@ const (
 												coordinator_tuition
 												) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
 )
+
+const (
+	InvalidFieldsError = model.StatusBadRequest("Check that all information fields of the advisory are correct.")
+)
+

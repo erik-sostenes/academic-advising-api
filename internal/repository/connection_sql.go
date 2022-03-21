@@ -11,11 +11,11 @@ import (
 
 var (
 	once sync.Once
+	sqlConnection *sql.DB
 )
 
 func LoadSqlConnection() (*sql.DB, error) {
 	var err error
-	var sqlConnection *sql.DB
 
 	once.Do(func() {
 		driverName := "mysql"
