@@ -2,7 +2,9 @@ package model
 
 import "time"
 
+// Models
 type (
+	// AcademicAdvisoryIds conatins all the ids that make up the academic advisory
 	AcademicAdvisoryIds struct {
 		SubjectId             uint32 `json:"subject_id"`
 		StudentTuition        uint32 `json:"student_tuition"`
@@ -11,7 +13,7 @@ type (
 		SubCoordinatorTuition uint32 `json:"sub_coordinators_tuition"`
 		CoordinatorTuition    uint32 `json:"coordinators_tuition"`
 	}
-
+	// AcademicAdvisory conatins the fields of the academic advisory
 	AcademicAdvisory struct {
 		AdvisoryId          string    `json:"advice_id"`
 		Description         string    `json:"description"`
@@ -22,32 +24,30 @@ type (
 		IsActive            bool      `json:"is_active"`
 		AcademicAdvisoryIds AcademicAdvisoryIds
 	}
-
+	// AcademicAdvisories slice of the AcademicAdvisory structure
 	AcademicAdvisories []AcademicAdvisory
 )
 
-func NewAcademicAdvisoryIds(subjectId, studentTuition, teacherTuition, universityCourseId,
-	subCoordinatorsTuition, coordinatorsTuition uint32) *AcademicAdvisoryIds {
-	return &AcademicAdvisoryIds{
-		SubjectId:             subjectId,
-		StudentTuition:        studentTuition,
-		TeacherTuition:        teacherTuition,
-		UniversityCourseId:    universityCourseId,
-		SubCoordinatorTuition: subCoordinatorsTuition,
-		CoordinatorTuition:    coordinatorsTuition,
-	}
-}
-func NewAcademicAdvisory(advisoryId, description string, reports []byte, fromDate,
-	toDate, recordTime time.Time, isActive bool, academicAdvisoryIds AcademicAdvisoryIds) *AcademicAdvisory {
+// Channels
+type (
+	// ResponseTeacherStream ChannelIsAccepted channel
+	ResponseTeacherStream chan *ChannelIsAccepted
+	// NotifyTeacherStream ChannelAcademicAdvisory channel
+	NotifyTeacherStream chan *ChannelAcademicAdvisory
 
-	return &AcademicAdvisory{
-		AdvisoryId:          advisoryId,
-		Description:         description,
-		Reports:             reports,
-		FromDate:            fromDate,
-		ToDate:              toDate,
-		RecordTime:          recordTime,
-		IsActive:            isActive,
-		AcademicAdvisoryIds: academicAdvisoryIds,
+	// ChannelAcademicAdvisory  structure of the message when notifying the teacher
+	ChannelAcademicAdvisory struct {
+		AcademicAdvisory AcademicAdvisory
+		Message          string `json:"message"`
 	}
-}
+	// ChannelIsAccepted teacher response structure
+	ChannelIsAccepted struct {
+		IsAccepted bool   `json:"is_accepted"`
+		Message    string `json:"message"`
+	}
+	// Channels contains all channels
+	Channels struct {
+		responseTeacherStream ResponseTeacherStream
+		notifyTeacherStream   NotifyTeacherStream
+	}
+)
