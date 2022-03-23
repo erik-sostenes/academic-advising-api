@@ -22,6 +22,7 @@ type (
 		ToDate              time.Time `json:"to_date"`
 		RecordTime          time.Time `json:"record_time"`
 		IsActive            bool      `json:"is_active"`
+		IsAcepted           bool      `jsom:"is_acepted"`
 		AcademicAdvisoryIds AcademicAdvisoryIds
 	}
 	// AcademicAdvisories slice of the AcademicAdvisory structure
