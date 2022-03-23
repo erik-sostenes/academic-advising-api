@@ -47,7 +47,7 @@ type (
 	}
 	// Channels contains all channels
 	Channels struct {
-		responseTeacherStream ResponseTeacherStream
-		notifyTeacherStream   NotifyTeacherStream
+		ResponseTeacherStream ResponseTeacherStream
+		NotifyTeacherStream   NotifyTeacherStream
 	}
 )
