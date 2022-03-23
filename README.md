@@ -1,4 +1,4 @@
 ﻿# academic-advising-api
  
  
-![Flujo al agregar una nueva asesoría](https://user-images.githubusercontent.com/99462097/159141068-63b9d21f-33f1-48fd-98ce-a775098ddf68.png)
+![Flujo al agregar una nueva asesoría(SSE)](https://user-images.githubusercontent.com/99462097/159653797-1ffc3b74-afc2-4eb5-891e-52c6a1600c0a.png)
