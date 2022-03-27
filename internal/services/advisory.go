@@ -5,23 +5,39 @@ import (
 	"github.com/itsoeh/academic-advising-api/internal/repository"
 )
 
-// AcademicAdvisoryAdministrator contains the method for administer the academic advisory 
-type AcademicAdvisoryAdministrator interface {
-	// AdministerAcademicAdvisory method to validate the input filds and submit data a the repository.
-	// Note: Only the advise is saved, if the teacher accepts the advise
-	AdministerAcademicAdvisory(*model.AcademicAdvisory) error
+// AdvisoryManager contains the methods to manage the creation of an advisory,
+// and check if the teacher accepts
+type AdvisoryManager interface {
+	// CreateAdvisory create a new academic advisory
+	CreateAdvisory(*model.AcademicAdvisory) error
+	// UpdateAdvisoryStatus method that updates the status of academic advisory
+	// NOTE: only if the teacher accepts the academic advisory
+	UpdateAdvisoryStatus(isAcepted bool, advisoryId string) error
 }
 
-type academicAdvisoryAdministrator struct {
-	repository.AdvisoryAggregator	
+type advisoryManager struct {
+	repository.AdvisoryStorage	
 }
 
-func NewAcademicAdvisingAdministrator() AcademicAdvisoryAdministrator {
-	return &academicAdvisoryAdministrator{
-		repository.NewAdvisoryAggregator(),
+// NewAdvisoryManager returns the AdvisoryManager interface
+func NewAdvisoryManager() AdvisoryManager {
+	return &advisoryManager{
+		repository.NewAdvisoryStorage(),
 	}
 }
 
-func (a *academicAdvisoryAdministrator) AdministerAcademicAdvisory(advisory *model.AcademicAdvisory) error {
-	return a.AdvisoryAggregator.AddAdvisory(advisory)
+func (a *advisoryManager) CreateAdvisory(advisory *model.AcademicAdvisory) error {
+	return a.AdvisoryStorage.InsertAdvisory(advisory)
 }
+
+func (a *advisoryManager) UpdateAdvisoryStatus(isAcepted bool, advisoryId string) (err error) {
+	// NOTE: if the status is false, academic advisory will be removed
+	if !isAcepted {
+		err = a.DeleteAdvisory(advisoryId)
+		return
+	}
+
+	err = a.AdvisoryStorage.UpdateAdvisory(isAcepted, advisoryId)
+	return
+}
+

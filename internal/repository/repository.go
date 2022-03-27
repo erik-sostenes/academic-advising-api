@@ -25,5 +25,5 @@ const (
 	sqlQueryDeleteAdvisory = `
 		DELETE FROM 
 			advisories a
-		WHERE a.advisory_id = ? AND a.is_acepted = ?`
+		WHERE a.advisory_id = ?`
 )
