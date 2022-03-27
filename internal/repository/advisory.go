@@ -9,24 +9,30 @@ import (
 	"github.com/itsoeh/academic-advising-api/internal/model"
 )
 
-// AdvisoryAggregator contains the method to add a new academic advisory
-type AdvisoryAggregator interface {
-	// AddAdvisory method that has the task of adding a new academic advisory through a sql query
-	AddAdvisory(*model.AcademicAdvisory) error
+// AdvisoryStorage contains all the methods to interact with the database
+// and be able to interact with academic advising
+type AdvisoryStorage interface {
+	// InsertAdvisory method that has the task of adding a new academic advisory through a sql query
+	InsertAdvisory(advisory *model.AcademicAdvisory) error
+	// UpdateAdvisory method that has the task of updating a academic advisory
+	UpdateAdvisory(isAcepted bool, advisoryId string) error
+	// DeleteAdvisory method that has the task of deleting a academic advisory
+	DeleteAdvisory(isAcepted bool, advisoryId string) error
 }
 
-// advisoryAggregator implements AdvisoryAggregator interface
-type advisoryAggregator struct {
+// advisoryStorage implements AdvisoryStorage interface
+type advisoryStorage struct {
 	*sql.DB
 }
 
-func NewAdvisoryAggregator() AdvisoryAggregator {
-	return &advisoryAggregator{
+// NewAdvisoryStorage implments the AdvisoryStorage interface
+func NewAdvisoryStorage() AdvisoryStorage {
+	return &advisoryStorage{
 		DB: NewDB(),
 	}
 }
 
-func (a *advisoryAggregator) AddAdvisory(advisory *model.AcademicAdvisory) (err error) {
+func (a *advisoryStorage) InsertAdvisory(advisory *model.AcademicAdvisory) (err error) {
 	_, err = a.Exec(sqlQueryAddAdvisory,
 		&advisory.AdvisoryId,
 		&advisory.Description,
@@ -56,12 +62,44 @@ func (a *advisoryAggregator) AddAdvisory(advisory *model.AcademicAdvisory) (err 
 
 		if code.Number == 1452 {
 			err = InvalidFieldsError
-			log.Println(err)
 			return
 		}
 
 		err = model.InternalServerError("An error has occurred when adding a new advisory.")
-		log.Println(err)
+		return
+	}
+	return
+}
+
+func (a *advisoryStorage) UpdateAdvisory(isAcepted bool, advisoryId string) (err error) {
+	rows, err := a.DB.Exec(sqlQueryUpdateAdisory,
+		&isAcepted,
+		&advisoryId,
+	)
+
+	if err != nil {
+		err = model.InternalServerError("An error has ocurred when deleting an advisory.")
+		return
+	}
+
+	if rowAffect, _ := rows.RowsAffected(); rowAffect != 1 {
+		err = model.NotFound(fmt.Sprintf("An advisory with id %v was not found", advisoryId))
+		return
+	}
+
+	return
+}
+
+func (a *advisoryStorage) DeleteAdvisory(isAcepted bool, advisoryId string) (err error) {
+	row, err := a.DB.Exec(sqlQueryDeleteAdvisory, &advisoryId, &isAcepted)
+
+	if err != nil {
+		err = model.InternalServerError("An error has ocurred when deleting an advisory.")
+		return
+	}
+
+	if rowAffect, _ := row.RowsAffected(); rowAffect != 1 {
+		err = model.NotFound(fmt.Sprintf("An advisory with id %v was not found", advisoryId))
 		return
 	}
 	return
