@@ -22,7 +22,7 @@ type AdvisoryStorage interface {
 
 // advisoryStorage implements AdvisoryStorage interface
 type advisoryStorage struct {
-	*sql.DB
+	DB *sql.DB
 }
 
 // NewAdvisoryStorage implments the AdvisoryStorage interface
@@ -33,13 +33,11 @@ func NewAdvisoryStorage() AdvisoryStorage {
 }
 
 func (a *advisoryStorage) InsertAdvisory(advisory *model.AcademicAdvisory) (err error) {
-	_, err = a.Exec(sqlQueryAddAdvisory,
+	_, err = a.DB.Exec(sqlQueryAddAdvisory,
 		&advisory.AdvisoryId,
 		&advisory.Description,
-		&advisory.Reports,
 		&advisory.FromDate,
 		&advisory.ToDate,
-		&advisory.RecordTime,
 		&advisory.IsActive,
 		&advisory.IsAcepted,
 		&advisory.AcademicAdvisoryIds.SubjectId,

@@ -9,48 +9,48 @@ import (
 )
 
 var testAcademicAdvisory = &model.AcademicAdvisory{
-	AdvisoryId: "190HY5D",
+	AdvisoryId:  "190HY5D",
 	Description: "This is test.",
-	Reports: []byte("This is test."),
-	FromDate: time.Now(),
-	ToDate: time.Now().AddDate(0, 2, 7),
-	RecordTime: time.Now(),
-	IsActive: true,
+	Reports:     []byte("This is test."),
+	FromDate:    time.Now(),
+	ToDate:      time.Now().AddDate(0, 2, 7),
+	RecordTime:  time.Now(),
+	IsActive:    false,
 	AcademicAdvisoryIds: model.AcademicAdvisoryIds{
-		SubjectId: 1,
-		StudentTuition: 1,
-		TeacherTuition: 1,
-		UniversityCourseId: 1,
+		SubjectId:             1,
+		StudentTuition:        1,
+		TeacherTuition:        1,
+		UniversityCourseId:    1,
 		SubCoordinatorTuition: 1,
-		CoordinatorTuition: 1,
+		CoordinatorTuition:    1,
 	},
 }
 
-var testAdvisoryAggregator = map[string]struct{
-	advisoryAggregator AdvisoryAggregator
+var testAdvisoryInsert = map[string]struct {
+	advisoryStorage  AdvisoryStorage
 	academicAdvisory model.AcademicAdvisory
-	expectError error
+	expectError      error
 }{
 	"Test 1. StatusBadRequest: Invalid Fields Error": {
-		advisoryAggregator: NewAdvisoryAggregator(),
-		academicAdvisory: *testAcademicAdvisory, 
-		expectError: InvalidFieldsError,
+		advisoryStorage:  NewAdvisoryStorage(),
+		academicAdvisory: *testAcademicAdvisory,
+		expectError:      InvalidFieldsError,
 	},
 	"Test 2. StatusBadRequest: Invalid Fields Error": {
-		advisoryAggregator: NewAdvisoryAggregator(),
-		academicAdvisory: *testAcademicAdvisory, 
-		expectError: InvalidFieldsError,
+		advisoryStorage:  NewAdvisoryStorage(),
+		academicAdvisory: *testAcademicAdvisory,
+		expectError:      InvalidFieldsError,
 	},
 }
 
-func TestAdvisoryAggregator_AddAdvisory(t *testing.T) {
-	for name, tt := range testAdvisoryAggregator {
+func TestAdvisoryStorage_InsertAdvisory(t *testing.T) {
+	for name, tt := range testAdvisoryInsert {
 		tt := tt
-		t.Run(name, func(t *testing.T) {	
-			err := tt.advisoryAggregator.AddAdvisory(&tt.academicAdvisory)
+		t.Run(name, func(t *testing.T) {
+			err := tt.advisoryStorage.InsertAdvisory(&tt.academicAdvisory)
 			if !(errors.Is(err, tt.expectError)) {
 				t.Errorf("\n expect error %v\n, got error %v\n", tt.expectError, err)
-			} 
+			}
 		})
 	}
 }
