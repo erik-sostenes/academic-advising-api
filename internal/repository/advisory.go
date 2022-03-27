@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/itsoeh/academic-advising-api/internal/model"
@@ -33,7 +32,7 @@ func NewAdvisoryStorage() AdvisoryStorage {
 }
 
 func (a *advisoryStorage) InsertAdvisory(advisory *model.AcademicAdvisory) (err error) {
-	_, err = a.DB.Exec(sqlQueryAddAdvisory,
+	_, err = a.DB.Exec(sqlQueryInsertAdvisory,
 		&advisory.AdvisoryId,
 		&advisory.Description,
 		&advisory.FromDate,
@@ -54,12 +53,11 @@ func (a *advisoryStorage) InsertAdvisory(advisory *model.AcademicAdvisory) (err 
 
 		if code.Number == 1062 {
 			err = model.StatusBadRequest(fmt.Sprintf("The advisory whith id %v already exist.", advisory.AdvisoryId))
-			log.Println(err)
 			return
 		}
 
 		if code.Number == 1452 {
-			err = InvalidFieldsError
+			err = model.StatusBadRequest("Check that all information fields of the advisory are correct.")
 			return
 		}
 

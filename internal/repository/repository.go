@@ -1,9 +1,7 @@
 package repository
 
-import "github.com/itsoeh/academic-advising-api/internal/model"
-
 const (
-	sqlQueryAddAdvisory = `INSERT INTO advisories(
+	sqlQueryInsertAdvisory = `INSERT INTO advisories(
 	advisory_id,
 	description,
 	from_date,
@@ -28,8 +26,4 @@ const (
 		DELETE FROM 
 			advisories a
 		WHERE a.advisory_id = ? AND a.is_acepted = ?`
-)
-
-const (
-	InvalidFieldsError = model.StatusBadRequest("Check that all information fields of the advisory are correct.")
 )
