@@ -1,13 +1,13 @@
 package handlers
 
 // Hadlers structure that manages the handlers
-type Hadlers struct {
-	AcademicAdvisory
+type hadlers struct {
+	HandlersAdvisory
 }
 
 // NewHandlers returns a handlers struct that contains all the handlers from AcademicAdvisory
-func NewHandlers() Hadlers{
-	return Hadlers{
-		NewAcademicAdvisory(),
+func NewHandlers() *hadlers{
+	return &hadlers{
+		NewHandlersAdvisory(),
 	}
 }  
