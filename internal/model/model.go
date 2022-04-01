@@ -27,6 +27,9 @@ type (
 	}
 	// AcademicAdvisories slice of the AcademicAdvisory structure
 	AcademicAdvisories []AcademicAdvisory
+
+	// Response
+	Map map[string]interface{}
 )
 
 // Channels
