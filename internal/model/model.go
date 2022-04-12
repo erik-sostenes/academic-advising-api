@@ -10,20 +10,20 @@ type (
 		StudentTuition        uint32 `json:"student_tuition"`
 		TeacherTuition        uint32 `json:"teacher_tuition"`
 		UniversityCourseId    uint32 `json:"university_course_id"`
-		SubCoordinatorTuition uint32 `json:"sub_coordinators_tuition"`
-		CoordinatorTuition    uint32 `json:"coordinators_tuition"`
+		SubCoordinatorTuition uint32 `json:"sub_coordinator_tuition"`
+		CoordinatorTuition    uint32 `json:"coordinator_tuition"`
 	}
 	// AcademicAdvisory conatins the fields of the academic advisory
 	AcademicAdvisory struct {
-		AdvisoryId          string    `json:"advice_id"`
-		Description         string    `json:"description"`
-		Reports             []byte    `json:"reports"`
-		FromDate            time.Time `json:"from_date"`
-		ToDate              time.Time `json:"to_date"`
-		RecordTime          time.Time `json:"record_time"`
-		IsActive            bool      `json:"is_active"`
-		IsAcepted           bool      `jsom:"is_acepted"`
-		AcademicAdvisoryIds AcademicAdvisoryIds
+		AdvisoryId          string              `json:"advisory_id"`
+		Description         string              `json:"description"`
+		Reports             string              `json:"reports,omitempty"`
+		FromDate            time.Time           `json:"from_date"`
+		ToDate              time.Time           `json:"to_date,omitempty"`
+		RecordTime          uint32              `json:"record_time,omitempty"`
+		IsActive            bool                `json:"is_active"`
+		IsAcepted           bool                `json:"is_acepted"`
+		AcademicAdvisoryIds AcademicAdvisoryIds `json:"academic_advisory_ids"`
 	}
 	// AcademicAdvisories slice of the AcademicAdvisory structure
 	AcademicAdvisories []AcademicAdvisory

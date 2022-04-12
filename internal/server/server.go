@@ -16,7 +16,7 @@ func NewServer() *server {
 }
 
 func (s *server) AllEnpoints(c *echo.Echo) {
-	route := c.Group("/v1/itsoeh/academic-advising-api")
+	route := c.Group("/v1/itsoeh/academy-advising-api")
 	route.POST("/create", s.HandlerCreateAdvisory)
 	route.PUT("/update/:is_acepted/:advisory_id", s.HandlerUpdateAdvisory)
 }

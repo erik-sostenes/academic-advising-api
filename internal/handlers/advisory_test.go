@@ -33,7 +33,7 @@ const academicAdvisoryTwoJSON = `{
 		"reports": "cddffhuyugt43664543g4hv43gruygdvyg43fv",
 		"from_date":    "2022-04-01T08:41:50Z",
 		"to_date":      "2022-04-01T08:41:50Z",
-		"record_time": "2022-04-01T08:41:50Z",
+		"record_time": 	1,
 		"is_active":    false,
 		"is_acepted": false,
 		"academic_advisory_ids": {
