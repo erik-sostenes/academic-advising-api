@@ -30,13 +30,13 @@ func (a *advisoryManager) CreateAdvisory(advisory *model.AcademicAdvisory) error
 	return a.AdvisoryStorage.InsertAdvisory(advisory)
 }
 
-func (a *advisoryManager) UpdateAdvisoryStatus(isAcepted bool, advisoryId string) (err error) {
+func (a *advisoryManager) UpdateAdvisoryStatus(isAccepted bool, advisoryId string) (err error) {
 	// NOTE: if the status is false, academic advisory will be removed
-	if !isAcepted {
+	if !isAccepted {
 		err = a.DeleteAdvisory(advisoryId)
 		return
 	}
 
-	err = a.AdvisoryStorage.UpdateAdvisory(isAcepted, advisoryId)
+	err = a.AdvisoryStorage.UpdateAdvisory(isAccepted, advisoryId)
 	return
 }

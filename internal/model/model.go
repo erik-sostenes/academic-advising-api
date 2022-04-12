@@ -13,7 +13,7 @@ type (
 		SubCoordinatorTuition uint32 `json:"sub_coordinator_tuition"`
 		CoordinatorTuition    uint32 `json:"coordinator_tuition"`
 	}
-	// AcademicAdvisory conatins the fields of the academic advisory
+	// AcademicAdvisory contains the fields of the academic advisory
 	AcademicAdvisory struct {
 		AdvisoryId          string              `json:"advisory_id"`
 		Description         string              `json:"description"`
@@ -22,7 +22,7 @@ type (
 		ToDate              time.Time           `json:"to_date,omitempty"`
 		RecordTime          uint32              `json:"record_time,omitempty"`
 		IsActive            bool                `json:"is_active"`
-		IsAcepted           bool                `json:"is_acepted"`
+		IsAccepted          bool                `json:"is_accepted"`
 		AcademicAdvisoryIds AcademicAdvisoryIds `json:"academic_advisory_ids"`
 	}
 	// AcademicAdvisories slice of the AcademicAdvisory structure

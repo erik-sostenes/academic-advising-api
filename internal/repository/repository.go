@@ -7,7 +7,7 @@ const (
 	from_date,
 	to_date,
 	is_active,
-	is_acepted,
+	is_accepted,
 	subject_id,
 	student_tuition,
 	teachers_tuition,
@@ -16,10 +16,10 @@ const (
 	coordinator_tuition
 	) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
-	sqlQueryUpdateAdisory = `
+	sqlQueryUpdateAdvisory = `
 		UPDATE 
 			advisories a
-		SET a.is_acepted = ?
+		SET a.is_accepted = ?
 		WHERE a.advisory_id = ?	`
 
 	sqlQueryDeleteAdvisory = `

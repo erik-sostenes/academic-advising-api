@@ -14,7 +14,7 @@ type AdvisoryStorage interface {
 	// InsertAdvisory method that has the task of adding a new academic advisory through a sql query
 	InsertAdvisory(advisory *model.AcademicAdvisory) error
 	// UpdateAdvisory method that has the task of updating a academic advisory
-	UpdateAdvisory(isAcepted bool, advisoryId string) error
+	UpdateAdvisory(isAccepted bool, advisoryId string) error
 	// DeleteAdvisory method that has the task of deleting a academic advisory
 	DeleteAdvisory(advisoryId string) error
 }
@@ -24,7 +24,7 @@ type advisoryStorage struct {
 	DB *sql.DB
 }
 
-// NewAdvisoryStorage implments the AdvisoryStorage interface
+// NewAdvisoryStorage implements the AdvisoryStorage interface
 func NewAdvisoryStorage() AdvisoryStorage {
 	return &advisoryStorage{
 		DB: NewDB(),
@@ -38,7 +38,7 @@ func (a *advisoryStorage) InsertAdvisory(advisory *model.AcademicAdvisory) (err 
 		&advisory.FromDate,
 		&advisory.ToDate,
 		&advisory.IsActive,
-		&advisory.IsAcepted,
+		&advisory.IsAccepted,
 		&advisory.AcademicAdvisoryIds.SubjectId,
 		&advisory.AcademicAdvisoryIds.StudentTuition,
 		&advisory.AcademicAdvisoryIds.TeacherTuition,
@@ -67,9 +67,9 @@ func (a *advisoryStorage) InsertAdvisory(advisory *model.AcademicAdvisory) (err 
 	return
 }
 
-func (a *advisoryStorage) UpdateAdvisory(isAcepted bool, advisoryId string) (err error) {
-	rows, err := a.DB.Exec(sqlQueryUpdateAdisory,
-		&isAcepted,
+func (a *advisoryStorage) UpdateAdvisory(isAccepted bool, advisoryId string) (err error) {
+	rows, err := a.DB.Exec(sqlQueryUpdateAdvisory,
+		&isAccepted,
 		&advisoryId,
 	)
 
