@@ -1,4 +1,4 @@
-module github.com/itsoeh/academic-advising-api
+module github.com/itsoeh/academy-advising-api
 
 go 1.18
 

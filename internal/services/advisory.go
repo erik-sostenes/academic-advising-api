@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/itsoeh/academic-advising-api/internal/model"
-	"github.com/itsoeh/academic-advising-api/internal/repository"
+	"github.com/itsoeh/academy-advising-api/internal/model"
+	"github.com/itsoeh/academy-advising-api/internal/repository"
 )
 
 // AdvisoryManager contains the methods to manage the creation of an advisory,
@@ -16,7 +16,7 @@ type AdvisoryManager interface {
 }
 
 type advisoryManager struct {
-	repository.AdvisoryStorage	
+	repository.AdvisoryStorage
 }
 
 // NewAdvisoryManager returns the AdvisoryManager interface
@@ -40,4 +40,3 @@ func (a *advisoryManager) UpdateAdvisoryStatus(isAcepted bool, advisoryId string
 	err = a.AdvisoryStorage.UpdateAdvisory(isAcepted, advisoryId)
 	return
 }
-

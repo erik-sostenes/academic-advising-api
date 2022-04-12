@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/itsoeh/academic-advising-api/internal/handlers"
+	"github.com/itsoeh/academy-advising-api/internal/handlers"
 	"github.com/labstack/echo/v4"
 )
 

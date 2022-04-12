@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/itsoeh/academic-advising-api/internal/model"
+	"github.com/itsoeh/academy-advising-api/internal/model"
 )
 
 // AdvisoryStorage contains all the methods to interact with the database

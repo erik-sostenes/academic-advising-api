@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/itsoeh/academic-advising-api/internal/model"
-	"github.com/itsoeh/academic-advising-api/internal/services"
+	"github.com/itsoeh/academy-advising-api/internal/model"
+	"github.com/itsoeh/academy-advising-api/internal/services"
 	"github.com/labstack/echo/v4"
 )
 

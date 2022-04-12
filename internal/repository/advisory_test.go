@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/itsoeh/academic-advising-api/internal/model"
+	"github.com/itsoeh/academy-advising-api/internal/model"
 )
 
 var testAcademicAdvisory = &model.AcademicAdvisory{
