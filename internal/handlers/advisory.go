@@ -2,39 +2,75 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
+	"strings"
+
 	"github.com/itsoeh/academic-advising-api/internal/model"
 	"github.com/itsoeh/academic-advising-api/internal/services"
+	"github.com/labstack/echo/v4"
 )
 
-// AcademicAdvisory contains the methods to follow the notification flow when adding an advisory
-type AcademicAdvisory interface {
-	// AddAcademicAdvisory handler that receives the new advisory and will take care of adding
-	// Note: only if the teacher agrees
-	AddAcademicAdvisory(http.ResponseWriter, *http.Request)
-
-	UpdateAcademicAdvisory(http.ResponseWriter, *http.Request)
+// HandlersAdvisory contains all http handlers to receive requests and responses from academic advising
+type HandlersAdvisory interface {
+	// HandlerCreateAdvisory http handler that you will
+	// receive as a request to create a new academic advisory
+	HandlerCreateAdvisory(echo.Context) error
+	// HandlerUpdateAdvisory http controller that will receive as a request
+	// to create update the status of the academic advising
+	HandlerUpdateAdvisory(echo.Context) error
 }
 
-type academicAdvisory struct {
-	services services.AcademicAdvisoryAdministrator
-	channels *model.Channels
+type handlerAdvisory struct {
+	services services.AdvisoryManager
 }
 
-// NewAcademicAdvisory implements the AcademicAdvisory interface
-func NewAcademicAdvisory() AcademicAdvisory {
-	return &academicAdvisory{
-		services: services.NewAcademicAdvisingAdministrator(),
-		channels: &model.Channels{
-			ResponseTeacherStream: make(model.ResponseTeacherStream),
-			NotifyTeacherStream:   make(model.NotifyTeacherStream),
-		},
+// NewHandlersAdvisory
+func NewHandlersAdvisory() HandlersAdvisory {
+	return &handlerAdvisory{
+		services: services.NewAdvisoryManager(),
 	}
 }
 
-func (a *academicAdvisory) AddAcademicAdvisory(w http.ResponseWriter, r *http.Request) {
+func (h *handlerAdvisory) HandlerCreateAdvisory(c echo.Context) error {
+	advisory := &model.AcademicAdvisory{}
 
+	if err := c.Bind(advisory); err != nil {
+		return c.JSON(http.StatusBadRequest, model.Map{"error: ": "The academic advising format is incorrect."})
+	}
+
+	err := h.services.CreateAdvisory(advisory)
+
+	if _, ok := err.(model.StatusBadRequest); ok {
+		return c.JSON(http.StatusBadRequest, model.Map{"error: ": err.Error()})
+	}
+
+	if _, ok := err.(model.InternalServerError); ok {
+		return c.JSON(http.StatusInternalServerError, model.Map{"error: ": err.Error()})
+	}
+
+	return c.JSON(http.StatusCreated, model.Map{"message": "Wait for the notification of the professor."})
 }
 
-func (a *academicAdvisory) UpdateAcademicAdvisory(w http.ResponseWriter, r *http.Request) {
+func (a *handlerAdvisory) HandlerUpdateAdvisory(c echo.Context) error {
+	isAcepted, err := strconv.ParseBool(c.Param("is_acepted"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, model.Map{"error: ": "Check the path param 'is_acepted', it is empty."})
+	}
 
+	advisoryId := c.Param("advisory_id")
+	if strings.TrimSpace(advisoryId) == "" {
+		return c.JSON(http.StatusBadRequest, model.Map{"error: ": "Check the path param 'advisory_id', it is empty."})
+	}
+
+	err = a.services.UpdateAdvisoryStatus(isAcepted, advisoryId)
+
+	if _, ok := err.(model.NotFound); ok {
+		return c.JSON(http.StatusNotFound, model.Map{"error: ": err.Error()})
+	}
+
+	if _, ok := err.(model.InternalServerError); ok {
+		return c.JSON(http.StatusInternalServerError, model.Map{"error: ": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, model.Map{"message: ": "The process has been completed successfully."})
 }

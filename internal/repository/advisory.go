@@ -16,7 +16,7 @@ type AdvisoryStorage interface {
 	// UpdateAdvisory method that has the task of updating a academic advisory
 	UpdateAdvisory(isAcepted bool, advisoryId string) error
 	// DeleteAdvisory method that has the task of deleting a academic advisory
-	DeleteAdvisory(isAcepted bool, advisoryId string) error
+	DeleteAdvisory(advisoryId string) error
 }
 
 // advisoryStorage implements AdvisoryStorage interface
@@ -86,8 +86,8 @@ func (a *advisoryStorage) UpdateAdvisory(isAcepted bool, advisoryId string) (err
 	return
 }
 
-func (a *advisoryStorage) DeleteAdvisory(isAcepted bool, advisoryId string) (err error) {
-	row, err := a.DB.Exec(sqlQueryDeleteAdvisory, &advisoryId, &isAcepted)
+func (a *advisoryStorage) DeleteAdvisory(advisoryId string) (err error) {
+	row, err := a.DB.Exec(sqlQueryDeleteAdvisory, &advisoryId)
 
 	if err != nil {
 		err = model.InternalServerError("An error has ocurred when deleting an advisory.")
