@@ -46,39 +46,103 @@ const academicAdvisoryTwoJSON = `{
 		}
 }`
 
-var academicAdvisory = map[string]struct {
-	advisoryJSON string
-	path         string
-	statusCode   uint16
-	httpMethod   string
+var academyAdvisory = map[string]struct {
+	advisoryJSON    string
+	handlerAdvisory HandlersAdvisory
+	path            string
+	statusCode      int
+	httpMethod      string
 }{
-	"StatusBadRequest: Format is incorrect": {
-		advisoryJSON: academicAdvisoryOneJSON,
-		path:         "/v1/itsoeh/academy-advising-api/create",
-		statusCode:   400,
+	"Format is incorrect, StatusCode: 400": {
+		advisoryJSON:    academicAdvisoryOneJSON,
+		handlerAdvisory: NewHandlersAdvisory(),
+		path:            "/v1/itsoeh/academy-advising-api/create",
+		statusCode:      400,
+		httpMethod:      http.MethodPost,
 	},
-	"StatusBadRequest: Incorrect data": {
-		advisoryJSON: academicAdvisoryTwoJSON,
-		path:         "/v1/itsoeh/academy-advising-api/create",
-		statusCode:   400,
+	"Incorrect data, StatusCode: 400": {
+		advisoryJSON:    academicAdvisoryTwoJSON,
+		handlerAdvisory: NewHandlersAdvisory(),
+		path:            "/v1/itsoeh/academy-advising-api/create",
+		statusCode:      400,
+		httpMethod:      http.MethodPost,
 	},
 }
 
 func TestHandlersAdvisory_HandlerCreateAdvisory(t *testing.T) {
-	for name, tt := range academicAdvisory {
+	for name, tt := range academyAdvisory {
 		tt := tt
 		t.Run(name, func(t *testing.T) {
 			e := echo.New()
 
-			req := NewRequest(t, http.MethodPost, tt.path, tt.advisoryJSON)
+			req := NewRequest(t, tt.httpMethod, tt.path, tt.advisoryJSON)
 			defer req.Body.Close()
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
-			NewHandlersAdvisory().HandlerCreateAdvisory(c)
+			tt.handlerAdvisory.HandlerCreateAdvisory(c)
 
-			if rec.Code != int(tt.statusCode) {
+			if rec.Code != tt.statusCode {
+				t.Errorf("expected error code %v, got error code %v", tt.statusCode, rec.Code)
+			}
+		})
+	}
+}
+
+var academyAdvisoryQueryParams = map[string]struct {
+	path            string
+	advisoryId      string
+	isAcepted       string
+	handlerAdvisory HandlersAdvisory
+	statusCode      int
+	httpMethod      string
+}{
+	"Academy Advising not found, StatusCode: 404": {
+		path:            "/v1/itsoeh/academy-advising-api/update/:advisory_id/:is_acepted",
+		advisoryId:      "3476347",
+		isAcepted:       "false",
+		statusCode:      404,
+		handlerAdvisory: NewHandlersAdvisory(),
+		httpMethod:      http.MethodPut,
+	},
+	"isAceptedQueryParam empty, StatusCode: 400": {
+		path:            "/v1/itsoeh/academy-advising-api/update/:advisory_id/:is_acepted",
+		advisoryId:      "3476347",
+		isAcepted:       "  ",
+		statusCode:      400,
+		handlerAdvisory: NewHandlersAdvisory(),
+		httpMethod:      http.MethodPut,
+	},
+	"advisoryIdQueryParam empty, StatusCode: 400": {
+		path:            "/v1/itsoeh/academy-advising-api/update/:advisory_id/:is_acepted",
+		advisoryId:      "    ",
+		isAcepted:       "true",
+		statusCode:      400,
+		handlerAdvisory: NewHandlersAdvisory(),
+		httpMethod:      http.MethodPut,
+	},
+}
+
+func TestHandlersAdvisory_HandlerUpdateAdvisory(t *testing.T) {
+	for name, tt := range academyAdvisoryQueryParams {
+		tt := tt
+		t.Run(name, func(t *testing.T) {
+			e := echo.New()
+
+			req := NewRequest(t, tt.httpMethod, tt.path, "")
+			defer req.Body.Close()
+			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+
+			c.SetParamNames("advisory_id", "is_acepted")
+			c.SetParamValues(tt.advisoryId, tt.isAcepted)
+
+			tt.handlerAdvisory.HandlerUpdateAdvisory(c)
+
+			if rec.Code != tt.statusCode {
 				t.Errorf("expected error code %v, got error code %v", tt.statusCode, rec.Code)
 			}
 		})
