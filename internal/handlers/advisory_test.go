@@ -106,7 +106,7 @@ var academyAdvisoryQueryParams = map[string]struct {
 		handlerAdvisory: NewHandlerAdvisory(),
 		httpMethod:      http.MethodPut,
 	},
-	"isAceptedQueryParam empty, StatusCode: 400": {
+	"isAcceptedQueryParam empty, StatusCode: 400": {
 		path:            "/v1/itsoeh/academy-advising-api/update/:advisory_id/:is_accepted",
 		advisoryId:      "3476347",
 		isAccepted:      "  ",

@@ -3,6 +3,7 @@ package services
 import (
 	"github.com/itsoeh/academy-advising-api/internal/model"
 	"github.com/itsoeh/academy-advising-api/internal/repository"
+	"github.com/itsoeh/academy-advising-api/internal/services/notifier"
 )
 
 // AdvisoryManager contains the methods to manage the creation of an advisory,
@@ -12,31 +13,39 @@ type AdvisoryManager interface {
 	CreateAdvisory(*model.AcademicAdvisory) error
 	// UpdateAdvisoryStatus method that updates the status of academic advisory
 	// NOTE: only if the teacher accepts the academic advisory
-	UpdateAdvisoryStatus(isAcepted bool, advisoryId string) error
+	UpdateAdvisoryStatus(isAccepted bool, advisoryId string) error
 }
 
 type advisoryManager struct {
-	repository.AdvisoryStorage
+	advisoryStorage repository.AdvisoryStorage
+	notifier        notifier.Subscribers
 }
 
 // NewAdvisoryManager returns the AdvisoryManager interface
 func NewAdvisoryManager() AdvisoryManager {
 	return &advisoryManager{
-		repository.NewAdvisoryStorage(),
+		advisoryStorage: repository.NewAdvisoryStorage(),
+		notifier:        notifier.NewSubscribers(),
 	}
 }
 
 func (a *advisoryManager) CreateAdvisory(advisory *model.AcademicAdvisory) error {
-	return a.AdvisoryStorage.InsertAdvisory(advisory)
+	return a.advisoryStorage.InsertAdvisory(advisory)
 }
 
 func (a *advisoryManager) UpdateAdvisoryStatus(isAccepted bool, advisoryId string) (err error) {
 	// NOTE: if the status is false, academic advisory will be removed
 	if !isAccepted {
-		err = a.DeleteAdvisory(advisoryId)
+		err = a.advisoryStorage.DeleteAdvisory(advisoryId)
 		return
 	}
 
-	err = a.AdvisoryStorage.UpdateAdvisory(isAccepted, advisoryId)
+	err = a.advisoryStorage.UpdateAdvisory(isAccepted, advisoryId)
+
+	n := notifier.New(isAccepted)
+
+	a.notifier.AddNotifier("Se le notificara al alumno ", n)
+	a.notifier.NotifyNotifier()
+
 	return
 }

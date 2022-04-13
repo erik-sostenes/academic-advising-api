@@ -1,13 +1,25 @@
 package notifier
 
-import "log"
+import (
+	"fmt"
+)
 
+// Notifier contains the method to notify subscribers
 type Notifier interface {
-	Notify(string)
+	// Notify method that is responsible for notifying the message
+	Notify()
 }
 
-type notifier struct{}
+type notifier struct {
+	IsAccepted bool
+}
 
-func (*notifier) Notify(message string) {
-	log.Println(message)
+// New returns a notifier structure that implements the Notifier interface
+// receive the response
+func New(IsAccepted bool) Notifier {
+	return &notifier{IsAccepted: IsAccepted}
+}
+
+func (n *notifier) Notify() {
+	fmt.Printf("Se le acaba de notificar al alumno %v", n.IsAccepted)
 }
