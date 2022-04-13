@@ -3,7 +3,6 @@ package services
 import (
 	"github.com/itsoeh/academy-advising-api/internal/model"
 	"github.com/itsoeh/academy-advising-api/internal/repository"
-	"github.com/itsoeh/academy-advising-api/internal/services/notifier"
 )
 
 // AdvisoryManager contains the methods to manage the creation of an advisory,
@@ -18,14 +17,12 @@ type AdvisoryManager interface {
 
 type advisoryManager struct {
 	advisoryStorage repository.AdvisoryStorage
-	notifier        notifier.Subscribers
 }
 
 // NewAdvisoryManager returns the AdvisoryManager interface
 func NewAdvisoryManager() AdvisoryManager {
 	return &advisoryManager{
 		advisoryStorage: repository.NewAdvisoryStorage(),
-		notifier:        notifier.NewSubscribers(),
 	}
 }
 
@@ -40,12 +37,5 @@ func (a *advisoryManager) UpdateAdvisoryStatus(isAccepted bool, advisoryId strin
 		return
 	}
 
-	err = a.advisoryStorage.UpdateAdvisory(isAccepted, advisoryId)
-
-	n := notifier.New(isAccepted)
-
-	a.notifier.AddNotifier("Se le notificara al alumno ", n)
-	a.notifier.NotifyNotifier()
-
-	return
+	return a.advisoryStorage.UpdateAdvisory(isAccepted, advisoryId)
 }
