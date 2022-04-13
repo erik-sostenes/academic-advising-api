@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/itsoeh/academic-advising-api/internal/model"
+	"github.com/itsoeh/academy-advising-api/internal/model"
 )
 
 var testAcademicAdvisory = &model.AcademicAdvisory{
@@ -56,19 +56,19 @@ func TestAdvisoryStorage_InsertAdvisory(t *testing.T) {
 
 var testParameters = map[string]struct {
 	advisoryStorage AdvisoryStorage
-	isAcepted       bool
+	isAccepted      bool
 	advisoryId      string
 	expectError     error
 }{
 	"Test 1. StatusNotFound: Advisory not found": {
 		advisoryStorage: NewAdvisoryStorage(),
-		isAcepted:       true,
+		isAccepted:      true,
 		advisoryId:      "2002ESSHTS",
 		expectError:     model.NotFound(fmt.Sprintf("An advisory with id %v was not found", "2002ESSHTS")),
 	},
-	" Test 2. StarusNotFound: Advisory not fount foundd": {
+	" Test 2. StarusNotFound: Advisory not fount found": {
 		advisoryStorage: NewAdvisoryStorage(),
-		isAcepted:       false,
+		isAccepted:      false,
 		advisoryId:      "2001ESSHTE",
 		expectError:     model.NotFound(fmt.Sprintf("An advisory with id %v was not found", "2001ESSHTE")),
 	},
@@ -78,7 +78,7 @@ func TestAdvisoryStorage_UpdateAdvisory(t *testing.T) {
 	for name, tt := range testParameters {
 		tt := tt
 		t.Run(name, func(t *testing.T) {
-			err := tt.advisoryStorage.UpdateAdvisory(tt.isAcepted, tt.advisoryId)
+			err := tt.advisoryStorage.UpdateAdvisory(tt.isAccepted, tt.advisoryId)
 			if !errors.Is(err, tt.expectError) {
 				t.Fatalf("\n expected error %v\n, got error %v\n", tt.expectError, err)
 			}
@@ -90,7 +90,7 @@ func TestAdvisoryStorage_DeleteAdvisory(t *testing.T) {
 	for name, tt := range testParameters {
 		tt := tt
 		t.Run(name, func(t *testing.T) {
-			err := tt.advisoryStorage.UpdateAdvisory(tt.isAcepted, tt.advisoryId)
+			err := tt.advisoryStorage.UpdateAdvisory(tt.isAccepted, tt.advisoryId)
 			if !errors.Is(err, tt.expectError) {
 				t.Fatalf("\n expected error %v\n, got error %v\n", tt.expectError, err)
 			}

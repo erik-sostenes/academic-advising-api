@@ -16,7 +16,7 @@ const academicAdvisoryOneJSON = `{
 		"from_date":    "2022-04-01T08:41:50Z",
 		"to_date":      "2022-04-01T08:41:50Z",
 		"is_active":    false,
-		"is_acepted": false,
+		"is_accepted": false,
 		"academic_advisory_ids": {
 			"subject_id" :             1,
 			"student_tuition" :        1,
@@ -35,7 +35,7 @@ const academicAdvisoryTwoJSON = `{
 		"to_date":      "2022-04-01T08:41:50Z",
 		"record_time": 	1,
 		"is_active":    false,
-		"is_acepted": false,
+		"is_accepted": false,
 		"academic_advisory_ids": {
 			"subject_id" :             1,
 			"student_tuition" :        1,
@@ -48,21 +48,21 @@ const academicAdvisoryTwoJSON = `{
 
 var academyAdvisory = map[string]struct {
 	advisoryJSON    string
-	handlerAdvisory HandlersAdvisory
+	handlerAdvisory HandlerAdvisory
 	path            string
 	statusCode      int
 	httpMethod      string
 }{
 	"Format is incorrect, StatusCode: 400": {
 		advisoryJSON:    academicAdvisoryOneJSON,
-		handlerAdvisory: NewHandlersAdvisory(),
+		handlerAdvisory: NewHandlerAdvisory(),
 		path:            "/v1/itsoeh/academy-advising-api/create",
 		statusCode:      400,
 		httpMethod:      http.MethodPost,
 	},
 	"Incorrect data, StatusCode: 400": {
 		advisoryJSON:    academicAdvisoryTwoJSON,
-		handlerAdvisory: NewHandlersAdvisory(),
+		handlerAdvisory: NewHandlerAdvisory(),
 		path:            "/v1/itsoeh/academy-advising-api/create",
 		statusCode:      400,
 		httpMethod:      http.MethodPost,
@@ -93,33 +93,33 @@ func TestHandlersAdvisory_HandlerCreateAdvisory(t *testing.T) {
 var academyAdvisoryQueryParams = map[string]struct {
 	path            string
 	advisoryId      string
-	isAcepted       string
-	handlerAdvisory HandlersAdvisory
+	isAccepted      string
+	handlerAdvisory HandlerAdvisory
 	statusCode      int
 	httpMethod      string
 }{
 	"Academy Advising not found, StatusCode: 404": {
-		path:            "/v1/itsoeh/academy-advising-api/update/:advisory_id/:is_acepted",
+		path:            "/v1/itsoeh/academy-advising-api/update/:advisory_id/:is_accepted",
 		advisoryId:      "3476347",
-		isAcepted:       "false",
+		isAccepted:      "false",
 		statusCode:      404,
-		handlerAdvisory: NewHandlersAdvisory(),
+		handlerAdvisory: NewHandlerAdvisory(),
 		httpMethod:      http.MethodPut,
 	},
-	"isAceptedQueryParam empty, StatusCode: 400": {
-		path:            "/v1/itsoeh/academy-advising-api/update/:advisory_id/:is_acepted",
+	"isAcceptedQueryParam empty, StatusCode: 400": {
+		path:            "/v1/itsoeh/academy-advising-api/update/:advisory_id/:is_accepted",
 		advisoryId:      "3476347",
-		isAcepted:       "  ",
+		isAccepted:      "  ",
 		statusCode:      400,
-		handlerAdvisory: NewHandlersAdvisory(),
+		handlerAdvisory: NewHandlerAdvisory(),
 		httpMethod:      http.MethodPut,
 	},
 	"advisoryIdQueryParam empty, StatusCode: 400": {
-		path:            "/v1/itsoeh/academy-advising-api/update/:advisory_id/:is_acepted",
+		path:            "/v1/itsoeh/academy-advising-api/update/:advisory_id/:is_accepted",
 		advisoryId:      "    ",
-		isAcepted:       "true",
+		isAccepted:      "true",
 		statusCode:      400,
-		handlerAdvisory: NewHandlersAdvisory(),
+		handlerAdvisory: NewHandlerAdvisory(),
 		httpMethod:      http.MethodPut,
 	},
 }
@@ -137,8 +137,8 @@ func TestHandlersAdvisory_HandlerUpdateAdvisory(t *testing.T) {
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
 
-			c.SetParamNames("advisory_id", "is_acepted")
-			c.SetParamValues(tt.advisoryId, tt.isAcepted)
+			c.SetParamNames("advisory_id", "is_accepted")
+			c.SetParamValues(tt.advisoryId, tt.isAccepted)
 
 			tt.handlerAdvisory.HandlerUpdateAdvisory(c)
 

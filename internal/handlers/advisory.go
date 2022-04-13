@@ -5,13 +5,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/itsoeh/academic-advising-api/internal/model"
-	"github.com/itsoeh/academic-advising-api/internal/services"
+	"github.com/itsoeh/academy-advising-api/internal/model"
+	"github.com/itsoeh/academy-advising-api/internal/services"
 	"github.com/labstack/echo/v4"
 )
 
-// HandlersAdvisory contains all http handlers to receive requests and responses from academic advising
-type HandlersAdvisory interface {
+// HandlerAdvisory contains all http handlers to receive requests and responses from academic advising
+type HandlerAdvisory interface {
 	// HandlerCreateAdvisory http handler that you will
 	// receive as a request to create a new academic advisory
 	HandlerCreateAdvisory(echo.Context) error
@@ -24,8 +24,8 @@ type handlerAdvisory struct {
 	services services.AdvisoryManager
 }
 
-// NewHandlersAdvisory
-func NewHandlersAdvisory() HandlersAdvisory {
+// NewHandlerAdvisory
+func NewHandlerAdvisory() HandlerAdvisory {
 	return &handlerAdvisory{
 		services: services.NewAdvisoryManager(),
 	}
@@ -51,10 +51,10 @@ func (h *handlerAdvisory) HandlerCreateAdvisory(c echo.Context) error {
 	return c.JSON(http.StatusCreated, model.Map{"message": "Wait for the notification of the professor."})
 }
 
-func (a *handlerAdvisory) HandlerUpdateAdvisory(c echo.Context) error {
-	isAcepted, err := strconv.ParseBool(c.Param("is_acepted"))
+func (h *handlerAdvisory) HandlerUpdateAdvisory(c echo.Context) error {
+	isAccepted, err := strconv.ParseBool(c.Param("is_accepted"))
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, model.Map{"error: ": "Check the path param 'is_acepted', it is empty."})
+		return c.JSON(http.StatusBadRequest, model.Map{"error: ": "Check the path param 'is_accepted', it is empty."})
 	}
 
 	advisoryId := c.Param("advisory_id")
@@ -62,7 +62,7 @@ func (a *handlerAdvisory) HandlerUpdateAdvisory(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, model.Map{"error: ": "Check the path param 'advisory_id', it is empty."})
 	}
 
-	err = a.services.UpdateAdvisoryStatus(isAcepted, advisoryId)
+	err = h.services.UpdateAdvisoryStatus(isAccepted, advisoryId)
 
 	if _, ok := err.(model.NotFound); ok {
 		return c.JSON(http.StatusNotFound, model.Map{"error: ": err.Error()})
