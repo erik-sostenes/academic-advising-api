@@ -36,22 +36,15 @@ type (
 type (
 	// ResponseTeacherStream ChannelIsAccepted channel
 	ResponseTeacherStream chan *ChannelIsAccepted
-	// NotifyTeacherStream ChannelAcademicAdvisory channel
-	NotifyTeacherStream chan *ChannelAcademicAdvisory
 
-	// ChannelAcademicAdvisory  structure of the message when notifying the teacher
-	ChannelAcademicAdvisory struct {
-		AcademicAdvisory AcademicAdvisory
-		Message          string `json:"message"`
-	}
 	// ChannelIsAccepted teacher response structure
 	ChannelIsAccepted struct {
 		IsAccepted bool   `json:"is_accepted"`
 		Message    string `json:"message"`
 	}
+
 	// Channels contains all channels
 	Channels struct {
 		ResponseTeacherStream ResponseTeacherStream
-		NotifyTeacherStream   NotifyTeacherStream
 	}
 )
