@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/itsoeh/academy-advising-api/internal/model"
 	"github.com/itsoeh/academy-advising-api/internal/services"
@@ -18,8 +19,7 @@ type Notifier interface {
 	Notify(c echo.Context) error
 	// HandlerUpdateAdvisory http controller that will receive as a request
 	// to create update the status of the academic advising
-	HandlerUpdateAdvisory(echo.Context) error
-
+	HandlerUpdateAdvisory(ctx echo.Context) error
 }
 
 type notifier struct {
@@ -40,9 +40,10 @@ func NewNotifier() Notifier {
 func (n *notifier) Notify(c echo.Context) (err error) {
 	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
 	c.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	c.Response().Header().Set("Content-Type", "applicationn/stream+json")
+	c.Response().Header().Set("Content-Type", "text/event-stream")
 	c.Response().Header().Set("Cache-Control", "no-cache")
 	c.Response().Header().Set("Connection", "keep-alive")
+	c.Response().WriteHeader(http.StatusOK)
 
 	defer func() {
 		close(n.response.ResponseTeacherStream)
@@ -51,22 +52,24 @@ func (n *notifier) Notify(c echo.Context) (err error) {
 		log.Println("Client close connection")
 	}()
 
+	flusher, _ := c.Response().Writer.(http.Flusher)
 
-	flusher, ok := c.Response().Writer.(http.Flusher);
-	if !ok {
-		log.Println("Could not init http.Flusher")
-		return c.JSON(http.StatusInternalServerError, model.Map{"error": "An error ocurred on the server."})
-	}
+	timeout := time.After(1 * time.Second)
 
 	for {
 		select {
-		case response := <- n.response.ResponseTeacherStream:
-			if err := json.NewEncoder(c.Response().Writer).Encode(response); err != nil {
-				return c.JSON(http.StatusBadRequest, model.Map{"error": err})
+		case response := <-n.response.ResponseTeacherStream:
+			for {
+				if err = json.NewEncoder(c.Response().Writer).Encode(response); err != nil {
+					return c.JSON(http.StatusOK, model.Map{"message": response})
+				}
+				time.Sleep(time.Second * 1)
+				flusher.Flush()
 			}
-			flusher.Flush()
-		case <- c.Request().Context().Done():
+		case <-c.Request().Context().Done():
 			return
+
+		case <-timeout:
 		}
 	}
 }
@@ -91,10 +94,10 @@ func (h *notifier) HandlerUpdateAdvisory(c echo.Context) error {
 	if _, ok := err.(model.InternalServerError); ok {
 		return c.JSON(http.StatusInternalServerError, model.Map{"error: ": err.Error()})
 	}
-	
-	h.response.ResponseTeacherStream <-&model.ChannelIsAccepted{
+
+	h.response.ResponseTeacherStream <- &model.ChannelIsAccepted{
 		IsAccepted: isAccepted,
-		Message: "Tu asesoría academica ha sido aceptada",
+		Message:    "Tu asesoría academica ha sido aceptada",
 	}
 
 	return c.JSON(http.StatusOK, model.Map{"message: ": "The process has been completed successfully."})
