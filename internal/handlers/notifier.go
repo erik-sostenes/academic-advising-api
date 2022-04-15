@@ -2,7 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
@@ -37,7 +40,7 @@ func NewNotifier() Notifier {
 	}
 }
 
-func (n *notifier) Notify(c echo.Context) (err error) {
+func (n *notifier) Notify(c echo.Context) error {
 	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
 	c.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	c.Response().Header().Set("Content-Type", "text/event-stream")
@@ -59,16 +62,22 @@ func (n *notifier) Notify(c echo.Context) (err error) {
 	for {
 		select {
 		case response := <-n.response.ResponseTeacherStream:
-			for {
-				if err = json.NewEncoder(c.Response().Writer).Encode(response); err != nil {
-					return c.JSON(http.StatusOK, model.Map{"message": response})
-				}
-				time.Sleep(time.Second * 1)
-				flusher.Flush()
-			}
-		case <-c.Request().Context().Done():
-			return
 
+			v, err := json.Marshal(response)
+			if err != nil {
+				c.Response().Writer.WriteHeader(http.StatusInternalServerError)
+				io.WriteString(c.Response().Writer, err.Error())
+				break
+			}
+
+			id := rand.NewSource(time.Now().Unix()).Int63()
+
+			io.WriteString(c.Response().Writer, fmt.Sprintf("id: %v\nevent: eventSSE\ndata: %v", id, string(v)))
+			io.WriteString(c.Response().Writer, "\n\n")
+
+			flusher.Flush()
+		case <-c.Request().Context().Done():
+			break
 		case <-timeout:
 		}
 	}
@@ -95,9 +104,14 @@ func (h *notifier) HandlerUpdateAdvisory(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, model.Map{"error: ": err.Error()})
 	}
 
+	message := make(map[string]string)
+	if err := c.Bind(&message); err != nil {
+		return c.JSON(http.StatusBadRequest, model.Map{"error: ": err})
+	}
+
 	h.response.ResponseTeacherStream <- &model.ChannelIsAccepted{
 		IsAccepted: isAccepted,
-		Message:    "Tu asesoría academica ha sido aceptada",
+		Message:    message["message"],
 	}
 
 	return c.JSON(http.StatusOK, model.Map{"message: ": "The process has been completed successfully."})
