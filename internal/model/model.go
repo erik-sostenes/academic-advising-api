@@ -39,6 +39,7 @@ type (
 
 	// ChannelIsAccepted teacher response structure
 	ChannelIsAccepted struct {
+		StudentId  string `json:"student_id"`
 		IsAccepted bool   `json:"is_accepted"`
 		Message    string `json:"message"`
 	}

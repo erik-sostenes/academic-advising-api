@@ -68,7 +68,7 @@ var academyAdvisory = map[string]struct {
 	},
 }
 
-func TestsAdvisory_CreateAdvisory(t *testing.T) {
+func TestAdvisory_CreateAdvisory(t *testing.T) {
 	for name, tt := range academyAdvisory {
 		tt := tt
 		t.Run(name, func(t *testing.T) {
