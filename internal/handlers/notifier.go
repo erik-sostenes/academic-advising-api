@@ -20,9 +20,9 @@ import (
 type Notifier interface {
 	// Notify method that is responsible for notifying the message
 	Notify(c echo.Context) error
-	// HandlerUpdateAdvisory http controller that will receive as a request
+	// UpdateAdvisory http controller that will receive as a request
 	// to create update the status of the academic advising
-	HandlerUpdateAdvisory(ctx echo.Context) error
+	UpdateAdvisory(ctx echo.Context) error
 }
 
 type notifier struct {
@@ -83,7 +83,7 @@ func (n *notifier) Notify(c echo.Context) error {
 	}
 }
 
-func (h *notifier) HandlerUpdateAdvisory(c echo.Context) error {
+func (h *notifier) UpdateAdvisory(c echo.Context) error {
 	isAccepted, err := strconv.ParseBool(c.Param("is_accepted"))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, model.Map{"error: ": "Check the path param 'is_accepted', it is empty."})

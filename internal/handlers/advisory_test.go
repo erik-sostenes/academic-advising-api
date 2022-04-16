@@ -3,7 +3,6 @@ package handlers
 import (
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 
 	"github.com/labstack/echo/v4"
@@ -48,28 +47,28 @@ const academicAdvisoryTwoJSON = `{
 
 var academyAdvisory = map[string]struct {
 	advisoryJSON    string
-	handlerAdvisory HandlerAdvisory
+	advisory 				Advisory
 	path            string
 	statusCode      int
 	httpMethod      string
 }{
 	"Format is incorrect, StatusCode: 400": {
 		advisoryJSON:    academicAdvisoryOneJSON,
-		handlerAdvisory: NewHandlerAdvisory(),
+		advisory: 				NewAdvisory(),
 		path:            "/v1/itsoeh/academy-advising-api/create",
 		statusCode:      400,
 		httpMethod:      http.MethodPost,
 	},
 	"Incorrect data, StatusCode: 400": {
 		advisoryJSON:    academicAdvisoryTwoJSON,
-		handlerAdvisory: NewHandlerAdvisory(),
+		advisory: 				NewAdvisory(),
 		path:            "/v1/itsoeh/academy-advising-api/create",
 		statusCode:      400,
 		httpMethod:      http.MethodPost,
 	},
 }
 
-func TestHandlersAdvisory_HandlerCreateAdvisory(t *testing.T) {
+func TestsAdvisory_CreateAdvisory(t *testing.T) {
 	for name, tt := range academyAdvisory {
 		tt := tt
 		t.Run(name, func(t *testing.T) {
@@ -81,75 +80,11 @@ func TestHandlersAdvisory_HandlerCreateAdvisory(t *testing.T) {
 
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
-			tt.handlerAdvisory.HandlerCreateAdvisory(c)
+			tt.advisory.CreateAdvisory(c)
 
 			if rec.Code != tt.statusCode {
 				t.Errorf("expected error code %v, got error code %v", tt.statusCode, rec.Code)
 			}
 		})
 	}
-}
-
-var academyAdvisoryQueryParams = map[string]struct {
-	path            string
-	advisoryId      string
-	isAccepted      string
-	handlerAdvisory HandlerAdvisory
-	statusCode      int
-	httpMethod      string
-}{
-	"Academy Advising not found, StatusCode: 404": {
-		path:            "/v1/itsoeh/academy-advising-api/update/:advisory_id/:is_accepted",
-		advisoryId:      "3476347",
-		isAccepted:      "false",
-		statusCode:      404,
-		handlerAdvisory: NewHandlerAdvisory(),
-		httpMethod:      http.MethodPut,
-	},
-	"isAcceptedQueryParam empty, StatusCode: 400": {
-		path:            "/v1/itsoeh/academy-advising-api/update/:advisory_id/:is_accepted",
-		advisoryId:      "3476347",
-		isAccepted:      "  ",
-		statusCode:      400,
-		handlerAdvisory: NewHandlerAdvisory(),
-		httpMethod:      http.MethodPut,
-	},
-	"advisoryIdQueryParam empty, StatusCode: 400": {
-		path:            "/v1/itsoeh/academy-advising-api/update/:advisory_id/:is_accepted",
-		advisoryId:      "    ",
-		isAccepted:      "true",
-		statusCode:      400,
-		handlerAdvisory: NewHandlerAdvisory(),
-		httpMethod:      http.MethodPut,
-	},
-}
-
-func TestHandlersAdvisory_HandlerUpdateAdvisory(t *testing.T) {
-	for name, tt := range academyAdvisoryQueryParams {
-		tt := tt
-		t.Run(name, func(t *testing.T) {
-			e := echo.New()
-
-			req := NewRequest(t, tt.httpMethod, tt.path, "")
-			defer req.Body.Close()
-			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-
-			rec := httptest.NewRecorder()
-			c := e.NewContext(req, rec)
-
-			c.SetParamNames("advisory_id", "is_accepted")
-			c.SetParamValues(tt.advisoryId, tt.isAccepted)
-
-			tt.handlerAdvisory.HandlerUpdateAdvisory(c)
-
-			if rec.Code != tt.statusCode {
-				t.Errorf("expected error code %v, got error code %v", tt.statusCode, rec.Code)
-			}
-		})
-	}
-}
-
-func NewRequest(t testing.TB, method, path string, dataJSON string) *http.Request {
-	t.Helper()
-	return httptest.NewRequest(method, path, strings.NewReader(dataJSON))
 }
