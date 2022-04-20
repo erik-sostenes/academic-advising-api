@@ -6,16 +6,17 @@ import (
 	"strings"
 	"testing"
 )
-
 // Handlers structure that manages the handlers
 type handlers struct {
-	Advisory
+	AdvisoryHandler
+	Notifier
 }
 
 // NewHandlers returns a handler struct that contains all the handlers from AcademicAdvisory
 func NewHandlers() *handlers {
 	return &handlers{
-		NewAdvisory(),
+		NewAdvisoryHandler(),
+		NewNotifier(),
 	}
 }
 

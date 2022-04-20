@@ -20,9 +20,10 @@ type advisoryManager struct {
 }
 
 // NewAdvisoryManager returns the AdvisoryManager interface
-func NewAdvisoryManager() AdvisoryManager {
+// Inject an object of type Advisory Manager
+func NewAdvisoryManager(advisoryStorage repository.AdvisoryStorage) AdvisoryManager {
 	return &advisoryManager{
-		advisoryStorage: repository.NewAdvisoryStorage(),
+		advisoryStorage: advisoryStorage,
 	}
 }
 

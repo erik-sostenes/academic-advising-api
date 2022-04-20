@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/itsoeh/academy-advising-api/internal/repository"
 	"github.com/itsoeh/academy-advising-api/internal/services"
 	"github.com/labstack/echo/v4"
 )
@@ -49,7 +50,6 @@ const academicAdvisoryTwoJSON = `{
 var academyAdvisory = map[string]struct {
 	advisoryJSON string
   handlers     AdvisoryHandler
-	services     services.AdvisoryManager
 	path         string
 	statusCode   int
 	httpMethod   string
@@ -57,7 +57,6 @@ var academyAdvisory = map[string]struct {
 	"Format is incorrect, StatusCode: 400": {
 		advisoryJSON: academicAdvisoryOneJSON,
 		handlers:     NewAdvisoryHandler(),
-		services:     services.NewAdvisoryManager(),
 		path:         "/v1/itsoeh/academy-advising-api/create",
 		statusCode:   http.StatusBadRequest,
 		httpMethod:   http.MethodPost,
@@ -65,7 +64,6 @@ var academyAdvisory = map[string]struct {
 	"Incorrect data, StatusCode: 400": {
 		advisoryJSON: academicAdvisoryTwoJSON,
 		handlers: 		NewAdvisoryHandler(),
-		services:     services.NewAdvisoryManager(),
 		path:         "/v1/itsoeh/academy-advising-api/create",
 		statusCode:   http.StatusBadRequest,
 		httpMethod:   http.MethodPost,
@@ -73,12 +71,15 @@ var academyAdvisory = map[string]struct {
 }
 
 func TestAdvisory_CreateAdvisory(t *testing.T) {
+	repository := repository.NewAdvisoryStorage()
+	services := services.NewAdvisoryManager(repository)
+
 	for name, tt := range academyAdvisory {
 		tt := tt
 		t.Run(name, func(t *testing.T) {
 			e := echo.New()
 
-			e.POST(tt.path, tt.handlers.CreateAdvisory(tt.services))
+			e.POST(tt.path, tt.handlers.CreateAdvisory(services))
 			
 			req := NewRequest(t, tt.httpMethod, tt.path, tt.advisoryJSON)
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)

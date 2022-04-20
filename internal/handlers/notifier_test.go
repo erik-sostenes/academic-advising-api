@@ -1,15 +1,18 @@
 package handlers
 
 import (
-	"github.com/itsoeh/academy-advising-api/internal/model"
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/itsoeh/academy-advising-api/internal/repository"
+	"github.com/itsoeh/academy-advising-api/internal/services"
 	"github.com/labstack/echo/v4"
 )
 
+/*
 var responseTeacherStream = map[string]struct {
 	channel    model.ChannelIsAccepted
 	notifier   Notifier
@@ -46,78 +49,88 @@ func TestNotifier_Notify(t *testing.T) {
 		tt := tt
 		t.Run(name, func(t *testing.T) {
 			e := echo.New()
+			stream := make(chan *model.ChannelIsAccepted)
+
+			go func() {
+				defer close(stream)
+				stream <- &tt.channel
+			}()
+
+			e.GET(tt.path, tt.notifier.Notify(stream))
+			
 
 			req := NewRequest(t, tt.httpMethod, tt.path, "")
 			defer req.Body.Close()
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 
 			rec := httptest.NewRecorder()
-			c := e.NewContext(req, rec)
+			e.ServeHTTP(rec, req)
 
-			n := NewNotifier()
+			res := rec.Result()
+			defer res.Body.Close()
 
-			n.Notify(c)
-			n.response.ResponseTeacherStream <- &tt.channel
 
-			log.Println(rec.Code)
-			log.Println(rec.Result().Body)
+			log.Println(rec.Body.String())
 		})
 	}
 }
+*/
 
 var academyAdvisoryQueryParams = map[string]struct {
+	notifier   Notifier
 	path       string
 	advisoryId string
 	isAccepted string
-	notifier   Notifier
 	statusCode int
 	httpMethod string
 }{
 	"Academy Advising not found, StatusCode: 404": {
-		path:       "/v1/itsoeh/academy-advising-api/update/:advisory_id/:is_accepted",
+		notifier:   NewNotifier(),
+		path:       "/v1/itsoeh/academy-advising-api/update/%v/%v",
 		advisoryId: "3476347",
 		isAccepted: "false",
 		statusCode: http.StatusNotFound,
-		notifier:   NewNotifier(),
 		httpMethod: http.MethodPut,
 	},
-	"isAcceptedQueryParam empty, StatusCode: 400": {
-		path:       "/v1/itsoeh/academy-advising-api/update/:advisory_id/:is_accepted",
+	"Bad query param 'is_accepted', StatusCode: 400": {
+		notifier:   NewNotifier(),
+		path:       "/v1/itsoeh/academy-advising-api/update/%v/%v",
 		advisoryId: "3476347",
-		isAccepted: "  ",
+		isAccepted: "hk",
 		statusCode: http.StatusBadRequest,
-		notifier:   NewNotifier(),
 		httpMethod: http.MethodPut,
 	},
-	"advisoryIdQueryParam empty, StatusCode: 400": {
-		path:       "/v1/itsoeh/academy-advising-api/update/:advisory_id/:is_accepted",
-		advisoryId: "    ",
-		isAccepted: "true",
-		statusCode: http.StatusBadRequest,
+	"Empty query param 'advisory_id', StatusCode: 404": {
 		notifier:   NewNotifier(),
+		path:       "/v1/itsoeh/academy-advising-api/update/%v/%v",
+		advisoryId: "",
+		isAccepted: "true",
+		statusCode: http.StatusNotFound,
 		httpMethod: http.MethodPut,
 	},
 }
 
 func TestNotifier_UpdateAdvisory(t *testing.T) {
+	repository := repository.NewAdvisoryStorage()
+	services := services.NewAdvisoryManager(repository)
+
 	for name, tt := range academyAdvisoryQueryParams {
 		tt := tt
 		t.Run(name, func(t *testing.T) {
 			e := echo.New()
+			
+			e.PUT("/v1/itsoeh/academy-advising-api/update/:is_accepted/:advisory_id", tt.notifier.UpdateAdvisory(services, nil))		
 
-			req := NewRequest(t, tt.httpMethod, tt.path, "")
-			defer req.Body.Close()
+			req := NewRequest(t, tt.httpMethod, fmt.Sprintf(tt.path, tt.isAccepted, tt.advisoryId), "")
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 
 			rec := httptest.NewRecorder()
-			c := e.NewContext(req, rec)
+			e.ServeHTTP(rec, req)
 
-			c.SetParamNames("advisory_id", "is_accepted")
-			c.SetParamValues(tt.advisoryId, tt.isAccepted)
-
-			tt.notifier.UpdateAdvisory(c)
-
-			if rec.Code != tt.statusCode {
+			res := rec.Result()
+			defer res.Body.Close()
+			
+			if res.StatusCode != tt.statusCode {
 				t.Errorf("expected error code %v, got error code %v", tt.statusCode, rec.Code)
 			}
 		})
