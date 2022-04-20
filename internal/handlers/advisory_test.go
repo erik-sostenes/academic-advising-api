@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/itsoeh/academy-advising-api/internal/services"
 	"github.com/labstack/echo/v4"
 )
 
@@ -47,21 +48,24 @@ const academicAdvisoryTwoJSON = `{
 
 var academyAdvisory = map[string]struct {
 	advisoryJSON string
-	advisory     Advisory
+  handlers     AdvisoryHandler
+	services     services.AdvisoryManager
 	path         string
 	statusCode   int
 	httpMethod   string
 }{
 	"Format is incorrect, StatusCode: 400": {
 		advisoryJSON: academicAdvisoryOneJSON,
-		advisory:     NewAdvisory(),
+		handlers:     NewAdvisoryHandler(),
+		services:     services.NewAdvisoryManager(),
 		path:         "/v1/itsoeh/academy-advising-api/create",
 		statusCode:   http.StatusBadRequest,
 		httpMethod:   http.MethodPost,
 	},
 	"Incorrect data, StatusCode: 400": {
 		advisoryJSON: academicAdvisoryTwoJSON,
-		advisory:     NewAdvisory(),
+		handlers: 		NewAdvisoryHandler(),
+		services:     services.NewAdvisoryManager(),
 		path:         "/v1/itsoeh/academy-advising-api/create",
 		statusCode:   http.StatusBadRequest,
 		httpMethod:   http.MethodPost,
@@ -74,15 +78,19 @@ func TestAdvisory_CreateAdvisory(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			e := echo.New()
 
+			e.POST(tt.path, tt.handlers.CreateAdvisory(tt.services))
+			
 			req := NewRequest(t, tt.httpMethod, tt.path, tt.advisoryJSON)
-			defer req.Body.Close()
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-
+			
+			
 			rec := httptest.NewRecorder()
-			c := e.NewContext(req, rec)
-			tt.advisory.CreateAdvisory(c)
+			e.ServeHTTP(rec, req)
 
-			if rec.Code != tt.statusCode {
+			res := rec.Result()
+			defer res.Body.Close()
+				
+			if res.StatusCode != tt.statusCode {
 				t.Errorf("expected error code %v, got error code %v", tt.statusCode, rec.Code)
 			}
 		})
