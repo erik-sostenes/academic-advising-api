@@ -46,25 +46,25 @@ const academicAdvisoryTwoJSON = `{
 }`
 
 var academyAdvisory = map[string]struct {
-	advisoryJSON    string
-	advisory 				Advisory
-	path            string
-	statusCode      int
-	httpMethod      string
+	advisoryJSON string
+	advisory     Advisory
+	path         string
+	statusCode   int
+	httpMethod   string
 }{
 	"Format is incorrect, StatusCode: 400": {
-		advisoryJSON:    academicAdvisoryOneJSON,
-		advisory: 				NewAdvisory(),
-		path:            "/v1/itsoeh/academy-advising-api/create",
-		statusCode:      400,
-		httpMethod:      http.MethodPost,
+		advisoryJSON: academicAdvisoryOneJSON,
+		advisory:     NewAdvisory(),
+		path:         "/v1/itsoeh/academy-advising-api/create",
+		statusCode:   http.StatusBadRequest,
+		httpMethod:   http.MethodPost,
 	},
 	"Incorrect data, StatusCode: 400": {
-		advisoryJSON:    academicAdvisoryTwoJSON,
-		advisory: 				NewAdvisory(),
-		path:            "/v1/itsoeh/academy-advising-api/create",
-		statusCode:      400,
-		httpMethod:      http.MethodPost,
+		advisoryJSON: academicAdvisoryTwoJSON,
+		advisory:     NewAdvisory(),
+		path:         "/v1/itsoeh/academy-advising-api/create",
+		statusCode:   http.StatusBadRequest,
+		httpMethod:   http.MethodPost,
 	},
 }
 

@@ -31,7 +31,7 @@ type notifier struct {
 }
 
 // NewNotifier returns a notifier structure that implements the Notifier interface
-func NewNotifier() Notifier {
+func NewNotifier() *notifier {
 	return &notifier{
 		&model.Channels{
 			ResponseTeacherStream: make(model.ResponseTeacherStream),
@@ -59,6 +59,7 @@ func (n *notifier) Notify(c echo.Context) error {
 
 	timeout := time.After(1 * time.Second)
 
+	log.Println("hola")
 	for {
 		select {
 		case response := <-n.response.ResponseTeacherStream:
@@ -104,15 +105,14 @@ func (h *notifier) UpdateAdvisory(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, model.Map{"error: ": err.Error()})
 	}
 
-	message := make(map[string]string)
-	if err := c.Bind(&message); err != nil {
+	stream := &model.ChannelIsAccepted{}
+	if err := c.Bind(stream); err != nil {
 		return c.JSON(http.StatusBadRequest, model.Map{"error: ": err})
 	}
 
-	h.response.ResponseTeacherStream <- &model.ChannelIsAccepted{
-		IsAccepted: isAccepted,
-		Message:    message["message"],
-	}
+	stream.IsAccepted = isAccepted
+
+	h.response.ResponseTeacherStream <- stream
 
 	return c.JSON(http.StatusOK, model.Map{"message: ": "The process has been completed successfully."})
 }
