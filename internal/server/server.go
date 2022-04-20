@@ -1,6 +1,7 @@
 package server
 
 import (
+	"log"
 
 	"github.com/itsoeh/academy-advising-api/internal/handlers"
 	"github.com/itsoeh/academy-advising-api/internal/model"
@@ -16,6 +17,7 @@ type server struct {
 	services services.AdvisoryManager
 }
 
+// NewServer dependencies are injected, to start the server
 func NewServer(port string, services services.AdvisoryManager) server {
 	stream := make(chan *model.ChannelIsAccepted)
 	defer close(stream)
@@ -31,10 +33,14 @@ func NewServer(port string, services services.AdvisoryManager) server {
 	return s
 }
 
+// Run will start running the program on the defined port
 func (s *server) Run() error {
-	return s.engine.Start(s.port)
+	log.Printf("Initialize server on the port %v", s.port)
+
+	return  s.engine.Start(s.port)
 }
 
+// SetAllEndpoints contains all endpoints
 func (s *server) SetAllEndpoints(stream chan *model.ChannelIsAccepted) {
 	h := handlers.NewHandlers()
 	

@@ -111,7 +111,8 @@ var academyAdvisoryQueryParams = map[string]struct {
 }
 
 func TestNotifier_UpdateAdvisory(t *testing.T) {
-	repository := repository.NewAdvisoryStorage()
+	DB := repository.NewDB()
+	repository := repository.NewAdvisoryStorage(DB)
 	services := services.NewAdvisoryManager(repository)
 
 	for name, tt := range academyAdvisoryQueryParams {

@@ -7,8 +7,8 @@ import (
 )
 
 func main() {
-
-	if err := config.Run(); err != nil {
+	// run the program
+	if err := config.Run(); err !=  nil {
 		log.Println(err.Error())
 	}
 

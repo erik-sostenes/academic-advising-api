@@ -11,21 +11,25 @@ import (
 
 const defaultPort = ":8080"
 
+// Run method that is responsible for injecting dependencies
 func Run() error {
 	port := os.Getenv("PORT")
 
 	if strings.TrimSpace(port) == "" {
 		port = defaultPort
 	}
-
+	
 	_, err := repository.LoadSqlConnection()
 	if err != nil {
 		return err
 	}
-	
-	r := repository.NewAdvisoryStorage()
-	s := services.NewAdvisoryManager(r)
 
+	// inject dependencies
+	DB := repository.NewDB()
+	r := repository.NewAdvisoryStorage(DB)
+	s := services.NewAdvisoryManager(r)
+	
+	// initialize the server
 	start := server.NewServer(port, s)
 	
 	return start.Run()

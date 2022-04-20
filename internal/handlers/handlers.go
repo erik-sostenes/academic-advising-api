@@ -14,7 +14,7 @@ type handlers struct {
 
 // NewHandlers returns a handler struct that contains all the handlers from AcademicAdvisory
 func NewHandlers() *handlers {
-	return &handlers{
+	return  &handlers{
 		NewAdvisoryHandler(),
 		NewNotifier(),
 	}

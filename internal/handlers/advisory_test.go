@@ -71,7 +71,8 @@ var academyAdvisory = map[string]struct {
 }
 
 func TestAdvisory_CreateAdvisory(t *testing.T) {
-	repository := repository.NewAdvisoryStorage()
+	DB := repository.NewDB()
+	repository := repository.NewAdvisoryStorage(DB)
 	services := services.NewAdvisoryManager(repository)
 
 	for name, tt := range academyAdvisory {
