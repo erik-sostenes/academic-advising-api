@@ -34,17 +34,10 @@ type (
 
 // Channels
 type (
-	// ResponseTeacherStream ChannelIsAccepted channel
-	ResponseTeacherStream chan *ChannelIsAccepted
-
 	// ChannelIsAccepted teacher response structure
 	ChannelIsAccepted struct {
+		StudentId  string `json:"student_id"`
 		IsAccepted bool   `json:"is_accepted"`
 		Message    string `json:"message"`
-	}
-
-	// Channels contains all channels
-	Channels struct {
-		ResponseTeacherStream ResponseTeacherStream
 	}
 )

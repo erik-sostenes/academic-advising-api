@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/itsoeh/academy-advising-api/internal/model"
@@ -26,9 +25,9 @@ type advisoryStorage struct {
 }
 
 // NewAdvisoryStorage implements the AdvisoryStorage interface
-func NewAdvisoryStorage() AdvisoryStorage {
+func NewAdvisoryStorage(DB *sql.DB) AdvisoryStorage {
 	return &advisoryStorage{
-		DB: NewDB(),
+		DB: DB,
 	}
 }
 
@@ -78,7 +77,7 @@ func (a *advisoryStorage) UpdateAdvisory(isAccepted bool, advisoryId string) (er
 		err = model.InternalServerError("An error has ocurred when deleting an advisory.")
 		return
 	}
-	log.Println(rows.RowsAffected())
+
 	if rowAffect, _ := rows.RowsAffected(); rowAffect != 1 {
 		err = model.NotFound(fmt.Sprintf("An advisory with id %v was not found", advisoryId))
 		return

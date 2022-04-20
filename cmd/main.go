@@ -3,20 +3,13 @@ package main
 import (
 	"log"
 
-	"github.com/itsoeh/academy-advising-api/internal/repository"
-	"github.com/itsoeh/academy-advising-api/internal/server"
-	"github.com/labstack/echo/v4"
+	"github.com/itsoeh/academy-advising-api/cmd/config"
 )
 
 func main() {
-	_, err := repository.LoadSqlConnection()
-	if err != nil {
-		log.Fatal(err)
+	// run the program
+	if err := config.Run(); err !=  nil {
+		log.Println(err.Error())
 	}
 
-	start := echo.New()
-	server.NewServer().AllEnpoints(start)
-
-	log.Println("Starting server in localhost :8080 😀")
-	start.Logger.Fatal(start.Start(":8080"))
 }

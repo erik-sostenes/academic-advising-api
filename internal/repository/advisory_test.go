@@ -26,27 +26,27 @@ var testAcademicAdvisory = &model.AcademicAdvisory{
 }
 
 var testInsertAdvisory = map[string]struct {
-	advisoryStorage  AdvisoryStorage
 	academicAdvisory model.AcademicAdvisory
 	expectError      error
 }{
 	"Test 1. StatusBadRequest: Invalid Fields Error": {
-		advisoryStorage:  NewAdvisoryStorage(),
 		academicAdvisory: *testAcademicAdvisory,
 		expectError:      model.StatusBadRequest("Check that all information fields of the advisory are correct."),
 	},
 	"Test 2. StatusBadRequest: Invalid Fields Error": {
-		advisoryStorage:  NewAdvisoryStorage(),
 		academicAdvisory: *testAcademicAdvisory,
 		expectError:      model.StatusBadRequest("Check that all information fields of the advisory are correct."),
 	},
 }
 
 func TestAdvisoryStorage_InsertAdvisory(t *testing.T) {
+	DB := NewDB()
+	
 	for name, tt := range testInsertAdvisory {
 		tt := tt
 		t.Run(name, func(t *testing.T) {
-			err := tt.advisoryStorage.InsertAdvisory(&tt.academicAdvisory)
+			err := NewAdvisoryStorage(DB).InsertAdvisory(&tt.academicAdvisory)
+
 			if !(errors.Is(err, tt.expectError)) {
 				t.Errorf("\n expected error %v\n, got error %v\n", tt.expectError, err)
 			}
@@ -55,19 +55,16 @@ func TestAdvisoryStorage_InsertAdvisory(t *testing.T) {
 }
 
 var testParameters = map[string]struct {
-	advisoryStorage AdvisoryStorage
 	isAccepted      bool
 	advisoryId      string
 	expectError     error
 }{
 	"Test 1. StatusNotFound: Advisory not found": {
-		advisoryStorage: NewAdvisoryStorage(),
 		isAccepted:      true,
 		advisoryId:      "2002ESSHTS",
 		expectError:     model.NotFound(fmt.Sprintf("An advisory with id %v was not found", "2002ESSHTS")),
 	},
 	" Test 2. StarusNotFound: Advisory not fount found": {
-		advisoryStorage: NewAdvisoryStorage(),
 		isAccepted:      false,
 		advisoryId:      "2001ESSHTE",
 		expectError:     model.NotFound(fmt.Sprintf("An advisory with id %v was not found", "2001ESSHTE")),
@@ -75,10 +72,13 @@ var testParameters = map[string]struct {
 }
 
 func TestAdvisoryStorage_UpdateAdvisory(t *testing.T) {
+	DB := NewDB()
+	
 	for name, tt := range testParameters {
 		tt := tt
-		t.Run(name, func(t *testing.T) {
-			err := tt.advisoryStorage.UpdateAdvisory(tt.isAccepted, tt.advisoryId)
+		t.Run(name, func(t *testing.T) {	
+			err := NewAdvisoryStorage(DB).UpdateAdvisory(tt.isAccepted, tt.advisoryId)
+
 			if !errors.Is(err, tt.expectError) {
 				t.Fatalf("\n expected error %v\n, got error %v\n", tt.expectError, err)
 			}
@@ -87,10 +87,13 @@ func TestAdvisoryStorage_UpdateAdvisory(t *testing.T) {
 }
 
 func TestAdvisoryStorage_DeleteAdvisory(t *testing.T) {
+	DB := NewDB()
+	
 	for name, tt := range testParameters {
 		tt := tt
 		t.Run(name, func(t *testing.T) {
-			err := tt.advisoryStorage.UpdateAdvisory(tt.isAccepted, tt.advisoryId)
+
+			err := NewAdvisoryStorage(DB).UpdateAdvisory(tt.isAccepted, tt.advisoryId)
 			if !errors.Is(err, tt.expectError) {
 				t.Fatalf("\n expected error %v\n, got error %v\n", tt.expectError, err)
 			}
