@@ -7,6 +7,7 @@ import (
 	"github.com/itsoeh/academy-advising-api/internal/model"
 	"github.com/itsoeh/academy-advising-api/internal/services"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 const defaultPort = ":8080"
@@ -17,7 +18,7 @@ type server struct {
 	services services.AdvisoryManager
 }
 
-// NewServer dependencies are injected, to start the server
+// NewServer to start the server
 func NewServer(port string, services services.AdvisoryManager) server {
 	stream := make(chan *model.ChannelIsAccepted)
 	defer close(stream)
@@ -44,8 +45,12 @@ func (s *server) Run() error {
 func (s *server) SetAllEndpoints(stream chan *model.ChannelIsAccepted) {
 	h := handlers.NewHandlers()
 	
+	// Add middlewares 
+	s.engine.Use(middleware.Logger(), middleware.Recover(), middleware.CORS())
+
 	route := s.engine.Group("/v1/itsoeh/academy-advising-api")
+
 	route.POST("/create", h.CreateAdvisory(s.services))
 	route.PUT("/update/:is_accepted/:advisory_id", h.UpdateAdvisory(s.services, stream))
-	route.GET("/sse", h.Notify(stream))
+	route.GET("/handshake", h.Notify(stream))
 }
