@@ -8,6 +8,7 @@ import (
 	"github.com/itsoeh/academy-advising-api/internal/services"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	//"github.com/labstack/echo/v4/middleware"
 )
 
 const defaultPort = ":8080"
@@ -21,7 +22,6 @@ type server struct {
 // NewServer to start the server
 func NewServer(port string, services services.AdvisoryManager) server {
 	stream := make(chan *model.ChannelIsAccepted)
-	defer close(stream)
 
 	s :=  server{
 		port: port,

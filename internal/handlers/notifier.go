@@ -19,7 +19,7 @@ import (
 // Notifier contains the method to notify subscribers
 type Notifier interface {
 	// Notify method that is responsible for notifying the message
-	Notify(<- chan *model.ChannelIsAccepted) echo.HandlerFunc
+	Notify(chan *model.ChannelIsAccepted) echo.HandlerFunc
 	// UpdateAdvisory http controller that will receive as a request
 	// to create update the status of the academic advising
 	UpdateAdvisory(services.AdvisoryManager, chan <- *model.ChannelIsAccepted) echo.HandlerFunc
@@ -32,7 +32,7 @@ func NewNotifier() Notifier {
 	return &notifier{}
 }
 
-func (n *notifier) Notify(response <- chan *model.ChannelIsAccepted) echo.HandlerFunc {
+func (n *notifier) Notify(response chan *model.ChannelIsAccepted) echo.HandlerFunc {
 	return func(c echo.Context) (err error) {
 		c.Response().Header().Set("Access-Control-Allow-Origin", "*")
 		c.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -42,6 +42,7 @@ func (n *notifier) Notify(response <- chan *model.ChannelIsAccepted) echo.Handle
 		c.Response().WriteHeader(http.StatusOK)
 
 		defer func() {
+			close(response)
 			response = nil
 
 			log.Println("Client close connection")
@@ -79,6 +80,7 @@ func (n *notifier) Notify(response <- chan *model.ChannelIsAccepted) echo.Handle
 func (*notifier) UpdateAdvisory(services services.AdvisoryManager, response chan <- *model.ChannelIsAccepted) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		isAccepted, err := strconv.ParseBool(c.Param("is_accepted"))
+
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, model.Map{"error: ": "please verify that the value of the ´is_accepte' field is correct."})
 		}
