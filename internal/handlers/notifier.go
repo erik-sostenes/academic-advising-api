@@ -64,7 +64,7 @@ func (n *notifier) Notify(response <- chan *model.ChannelIsAccepted) echo.Handle
 
 				id := rand.NewSource(time.Now().Unix()).Int63()
 
-				io.WriteString(c.Response().Writer, fmt.Sprintf("id: %v\nevent: eventSSE\ndata: %v", id, string(v)))
+				io.WriteString(c.Response().Writer, fmt.Sprintf("id: %v\nevent: handshake\ndata: %v", id, string(v)))
 				io.WriteString(c.Response().Writer, "\n\n")
 
 				flusher.Flush()
