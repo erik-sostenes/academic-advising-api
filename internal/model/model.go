@@ -23,6 +23,7 @@ type (
 		RecordTime          uint32              `json:"record_time,omitempty"`
 		IsActive            bool                `json:"is_active"`
 		IsAccepted          bool                `json:"is_accepted"`
+		TeacherScheduleId   string              `json:"teacher_schedule_id"`
 		AcademicAdvisoryIds AcademicAdvisoryIds `json:"academic_advisory_ids"`
 	}
 	// AcademicAdvisories slice of the AcademicAdvisory structure
