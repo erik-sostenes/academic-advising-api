@@ -8,7 +8,6 @@ import (
 	"github.com/itsoeh/academy-advising-api/internal/services"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	//"github.com/labstack/echo/v4/middleware"
 )
 
 const defaultPort = ":8080"
@@ -48,7 +47,7 @@ func (s *server) SetAllEndpoints(stream chan *model.ChannelIsAccepted) {
 	// Add middlewares 
 	s.engine.Use(middleware.Logger(), middleware.Recover(), middleware.CORS())
 
-	route := s.engine.Group("/v1/itsoeh/academy-advising-api")
+	route := s.engine.Group("/v1/itsoeh/academic-advising-api")
 
 	route.POST("/create", h.CreateAdvisory(s.services))
 	route.PUT("/update/:is_accepted/:advisory_id", h.UpdateAdvisory(s.services, stream))
