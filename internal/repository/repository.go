@@ -16,6 +16,18 @@ const (
 	coordinator_tuition
 	) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
+	sqlQueryInserAcademicAdvisoryScheduleRecord = `
+	INSERT INTO academic_advisory_schedule_record(
+		academic_advisory_schedule_record_id,
+		teacher_schedule_id,
+		advisory_id
+	) VALUES(?, ?, ?);`
+	
+	slqQueryUpdateTeachersSchedules  = `
+	UPDATE teachers_schedules ts SET student_accountant =
+  	(SELECT count(*) FROM academic_advisory_schedule_record ar WHERE ar.teacher_schedule_id = ?)
+	WHERE ts.teacher_schedule_id = ?;`
+
 	sqlQueryUpdateAdvisory = `
 		UPDATE 
 			advisories a
@@ -26,4 +38,10 @@ const (
 		DELETE FROM 
 			advisories a
 		WHERE a.advisory_id = ?`
+
+	sqlQueryDeleteAcademicAdvisoryAcheduleRecord  = `
+		DELETE FROM
+			academic_advisory_schedule_record a 
+		WHERE a.teacher_schedule_id = ? AND advisory_id = ?;
+	`
 )
