@@ -90,7 +90,12 @@ func (*notifier) UpdateAdvisory(services services.AdvisoryManager, response chan
 			return c.JSON(http.StatusBadRequest, model.Map{"error: ": "please verify that the value of the ´advisory_id' field is correct."})
 		}
 
-		err = services.UpdateAdvisoryStatus(isAccepted, advisoryId)
+		teacherScheduleId := c.Param("teacher_schedule_id")
+		if strings.TrimSpace(teacherScheduleId) == "" {
+			return c.JSON(http.StatusBadRequest, model.Map{"error: ": "please verify that the value of the ´teacher_schedule_id' field is correct."})
+		}
+
+		err = services.UpdateAdvisoryStatus(isAccepted, advisoryId, teacherScheduleId)
 
 		if _, ok := err.(model.NotFound); ok {
 			return c.JSON(http.StatusNotFound, model.Map{"error: ": err.Error()})
