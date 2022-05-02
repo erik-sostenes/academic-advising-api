@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
@@ -163,7 +164,7 @@ func (a *advisoryStorage) DeleteAdvisory(advisoryId, teacherScheduleId string) (
 
 
 	row, err := tx.Exec(sqlQueryDeleteAdvisory, &advisoryId)
-
+	log.Println(err)
 	if err != nil {
 		err = model.InternalServerError("An error has ocurred when deleting an advisory.")
 		return
@@ -173,9 +174,9 @@ func (a *advisoryStorage) DeleteAdvisory(advisoryId, teacherScheduleId string) (
 		err = model.NotFound(fmt.Sprintf("An advisory with id %v was not found", advisoryId))
 		return
 	}
-
+/*
 	row, err = tx.Exec(sqlQueryDeleteAcademicAdvisoryAcheduleRecord, &teacherScheduleId, &advisoryId)
-
+	log.Println(err)
 	if err != nil {
 		err = model.InternalServerError("An error has ocurred when deleting an academic Advisory Achedule Record.")
 		return
@@ -185,7 +186,7 @@ func (a *advisoryStorage) DeleteAdvisory(advisoryId, teacherScheduleId string) (
 		err = model.NotFound(fmt.Sprintf("An Advisory Achedule Record with id %v was not found", advisoryId))
 		return
 	}
-
+*/
 	
 	if err = tx.Commit(); err != nil {
 		err = model.InternalServerError(err.Error())
