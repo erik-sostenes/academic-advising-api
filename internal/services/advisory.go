@@ -12,7 +12,7 @@ type AdvisoryManager interface {
 	CreateAdvisory(*model.AcademicAdvisory) error
 	// UpdateAdvisoryStatus method that updates the status of academic advisory
 	// NOTE: only if the teacher accepts the academic advisory
-	UpdateAdvisoryStatus(isAccepted bool, advisoryId string) error
+	UpdateAdvisoryStatus(isAccepted bool, advisoryId, teacherScheduleId string) error
 }
 
 type advisoryManager struct {
@@ -31,12 +31,12 @@ func (a *advisoryManager) CreateAdvisory(advisory *model.AcademicAdvisory) error
 	return a.advisoryStorage.InsertAdvisory(advisory)
 }
 
-func (a *advisoryManager) UpdateAdvisoryStatus(isAccepted bool, advisoryId string) (err error) {
+func (a *advisoryManager) UpdateAdvisoryStatus(isAccepted bool, advisoryId, teacherScheduleId string) (err error) {
 	// NOTE: if the status is false, academic advisory will be removed
 	if !isAccepted {
-		err = a.advisoryStorage.DeleteAdvisory(advisoryId)
+		err = a.advisoryStorage.DeleteAdvisory(advisoryId, teacherScheduleId)
 		return
 	}
 
-	return a.advisoryStorage.UpdateAdvisory(isAccepted, advisoryId)
+	return a.advisoryStorage.UpdateAdvisory(isAccepted, advisoryId, teacherScheduleId)
 }

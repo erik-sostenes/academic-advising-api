@@ -21,7 +21,7 @@ type Notifier interface {
 	// Notify method that is responsible for notifying the message
 	Notify(chan *model.ChannelIsAccepted) echo.HandlerFunc
 	// UpdateAdvisory http controller that will receive as a request
-	// to create update the status of the academic advising
+	// to update the status of the academic advising
 	UpdateAdvisory(services.AdvisoryManager, chan <- *model.ChannelIsAccepted) echo.HandlerFunc
 }
 
@@ -82,33 +82,38 @@ func (*notifier) UpdateAdvisory(services services.AdvisoryManager, response chan
 		isAccepted, err := strconv.ParseBool(c.Param("is_accepted"))
 
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, model.Map{"error: ": "please verify that the value of the ´is_accepte' field is correct."})
+			return echo.NewHTTPError(http.StatusBadRequest, model.Map{"error": "please verify that the value of the ´is_accepte' field is correct."})
 		}
 
 		advisoryId := c.Param("advisory_id")
 		if strings.TrimSpace(advisoryId) == "" {
-			return c.JSON(http.StatusBadRequest, model.Map{"error: ": "please verify that the value of the ´advisory_id' field is correct."})
+			return echo.NewHTTPError(http.StatusBadRequest, model.Map{"error": "please verify that the value of the ´advisory_id' field is correct."})
 		}
 
-		err = services.UpdateAdvisoryStatus(isAccepted, advisoryId)
+		teacherScheduleId := c.Param("teacher_schedule_id")
+		if strings.TrimSpace(teacherScheduleId) == "" {
+			return echo.NewHTTPError(http.StatusBadRequest, model.Map{"error": "please verify that the value of the ´teacher_schedule_id' field is correct."})
+		}
+
+		err = services.UpdateAdvisoryStatus(isAccepted, advisoryId, teacherScheduleId)
 
 		if _, ok := err.(model.NotFound); ok {
-			return c.JSON(http.StatusNotFound, model.Map{"error: ": err.Error()})
+			return echo.NewHTTPError(http.StatusNotFound, model.Map{"error": err.Error()})
 		}
 
 		if _, ok := err.(model.InternalServerError); ok {
-			return c.JSON(http.StatusInternalServerError, model.Map{"error: ": err.Error()})
+			return echo.NewHTTPError(http.StatusInternalServerError, model.Map{"error": err.Error()})
 		}
 
 		stream := &model.ChannelIsAccepted{}
 		if err := c.Bind(stream); err != nil {
-			return c.JSON(http.StatusBadRequest, model.Map{"error: ": err})
+			return echo.NewHTTPError(http.StatusBadRequest, model.Map{"error": err})
 		}
 
 		stream.IsAccepted = isAccepted
 
 		response <- stream
 
-		return c.JSON(http.StatusOK, model.Map{"message: ": "The process has been completed successfully."})
+		return c.JSON(http.StatusOK, model.Map{"message": "The process has been completed successfully."})
 	}
 }

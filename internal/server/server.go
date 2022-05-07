@@ -50,6 +50,6 @@ func (s *server) SetAllEndpoints(stream chan *model.ChannelIsAccepted) {
 	route := s.engine.Group("/v1/itsoeh/academic-advising-api")
 
 	route.POST("/create", h.CreateAdvisory(s.services))
-	route.PUT("/update/:is_accepted/:advisory_id", h.UpdateAdvisory(s.services, stream))
+	route.PUT("/update/:is_accepted/:advisory_id/:teacher_schedule_id", h.UpdateAdvisory(s.services, stream))
 	route.GET("/handshake", h.Notify(stream))
 }
